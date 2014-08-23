@@ -1,4 +1,5 @@
 from game_options import rendering_opts
+from maze import generate_maze
 #from maze import generate_maze
 SCREEN_SIZE = (800, 600)
 
@@ -44,8 +45,8 @@ def init():
     glLight(GL_LIGHT0, GL_POSITION,  (0, 1, 1, 0))    
     
 
-test_map = [[1,1,1,1],[0,0,0,0],[0,0,0,0],[0,1,0,0],[1,1,1,1]]    
-#test_map = generate_maze(20,20)
+#test_map = [[1,1,1,1],[0,0,0,0],[0,0,0,0],[0,1,0,0],[1,1,1,1]]    
+test_map = generate_maze(20,20)
 
 
 
