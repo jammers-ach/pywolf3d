@@ -33,8 +33,8 @@ class GameMap(object):
         self.players = []
         
         #For now just 1 floor
-        self.floor = Floor(self.w, self.h, 101)
-        self.ceiling = Celing(self.w,self.h,100)
+        self.floor = Floor(self.w, self.h, 1)
+        self.ceiling = Celing(self.w,self.h,2)
         
         
     def add_player(self,start_x,start_y):

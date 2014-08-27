@@ -29,7 +29,7 @@ def darken_surf(surface):
             surface.set_at((x,y),(darken(r,f),darken(b,f),darken(g,f),a))
     
 
-def loadTexture(imageName,darken=True):
+def load_texture(imageName,darken=True):
     """Load an image file as a 2D texture using pygame,
     returns two textures, the normal one and the darker one"""
     p = os.path.join(rendering_opts['tex_dir'],imageName)
@@ -60,7 +60,7 @@ def loadTexture(imageName,darken=True):
                 GL_RGBA, GL_UNSIGNED_BYTE, dark_image
             )
     
-    print "loaded %s" % p
+    print "TEXTURE: loaded %s" % p
     return ID,ID2
 
 def prep_texture(texture):

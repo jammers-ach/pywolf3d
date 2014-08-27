@@ -12,35 +12,14 @@ from pygame.locals import *
 from os import listdir
 from os.path import isfile, join
 
-from textures import loadTexture, prep_texture
+from textures import prep_texture
 from game_options import rendering_opts
 
+from wall_loader import load_walls
 
 
 #if we're rendering colours
 default_colour = (1,1,1)
-colour_maps = {
-               1:(0,0,1),
-               2:(0,1,1),
-               3:(0,1,0),
-               4:(1,0,0),
-               5:(1,0,1),
-               6:(1,1,0),
-               7:(1,1,1)}
-
-
-
-
-wall_texture_codes = {1:'Wall-000',
-            2:'Wall-002',
-            3:'Wall-004',
-            4:'Wall-006',
-            5:'Wall-008',
-            6:'Wall-010',
-            7:'Wall-012',
-            101:'Wall-145',
-            100:'Wall-143'}
-
 black = (0,0,0)
 
 
@@ -48,15 +27,16 @@ darken_colour = lambda x:(x[0]* rendering_opts['darken_factor'],\
                           x[1]* rendering_opts['darken_factor'],\
                           x[2]* rendering_opts['darken_factor'])
 
-wall_textures = None
+wall_types = None
+flat_types = None
 default_texture=None
 
 def load_textures():
-    global wall_textures
+    global wall_types
+    global flat_types
     global default_texture
     
-    wall_textures = dict([ ( f.replace('.png','') , loadTexture(f) ) for f in listdir(rendering_opts['tex_dir']) if isfile(join(rendering_opts['tex_dir'],f)) ])
-    default_texture = wall_textures[rendering_opts['wall_default']]
+    wall_types,flat_types = load_walls()
     
 
 class Cube(object):
@@ -65,14 +45,13 @@ class Cube(object):
     def __init__(self, position, wall_type,rendered_normals=[0,1,2,3]):
         
         self.position = position
-        self.wall_type = wall_type
+        self.wall_type_code = wall_type
         self.rendered_normals = rendered_normals
         
-        if(wall_textures == None):
+        if(wall_types == None):
             load_textures()
             
-        self.texture_code = wall_texture_codes.get(wall_type,rendering_opts['wall_default'])
-        self.texture = wall_textures[self.texture_code]
+        self.wall_type = wall_types[self.wall_type_code]
     
     num_faces = 5
     top_face = 4
@@ -118,7 +97,7 @@ class Cube(object):
     def render_texture(self):
 
         #Load dark texture
-        prep_texture(self.texture[0])
+        prep_texture(self.wall_type.texture1)
         vertices = [tuple(Vector3(v) + self.position) for v in self.vertices]
         
         glBegin(GL_QUADS)
@@ -129,7 +108,7 @@ class Cube(object):
                 glNormal3dv( self.normals[face_no] )
                 
                 v1, v2, v3, v4 = self.vertex_indices[face_no]
-            
+    
                 glTexCoord2fv(self.t_index[0])
                 glVertex( vertices[v1] )
                 glTexCoord2fv(self.t_index[1])
@@ -142,7 +121,7 @@ class Cube(object):
         glEnd()
         
         #Now the dark faces
-        prep_texture(self.texture[1])
+        prep_texture(self.wall_type.texture2)
         
         glBegin(GL_QUADS)
         for face_no in self.dark_faces:
@@ -240,13 +219,14 @@ class FlatSurface(object):
 
     height = 0.0
 
-    def __init__(self,w,h,texture,x=0,y=0):
+    def __init__(self,w,h,code,x=0,y=0):
         '''
         initilises the wall
         '''
-        self.texture_id = texture
-        self.texture_code = wall_texture_codes.get(texture,rendering_opts['floor_default'])
-        self.texture =  wall_textures[self.texture_code][0]
+        self.code = code
+        if(flat_types == None):
+            load_textures()
+        self.flat_type = flat_types[code]
         self.w = w
         self.h = h
         self.x = x
@@ -262,6 +242,7 @@ class FlatSurface(object):
 #         self.render_color()
         if(rendering_opts['textures']):
             return self.render_texture()
+            #return self.render_color()
         else:
             return self.render_color()
         
@@ -270,7 +251,7 @@ class FlatSurface(object):
         
         
     def render_texture(self):
-        prep_texture(self.texture)
+        prep_texture(self.flat_type.texture)
         glBegin(GL_QUADS)
         
         glNormal3dv( (0.0, +1.0, 0.0) )
@@ -287,7 +268,7 @@ class FlatSurface(object):
     
     def render_color(self):
         
-        gl_col = colour_maps.get(self.texture_id,default_colour)
+        gl_col = default_colour
         glColor( gl_col )
         glBegin(GL_QUADS)
         

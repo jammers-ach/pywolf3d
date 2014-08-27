@@ -8,8 +8,7 @@ Created on 21 Aug 2014
 rendering_opts = {
                   'textures':True, #Render with textures
                   'tex_dir':'textures/', #default_textures directory
-                  'wall_default':'Wall-000', #If there's no wall texture available what do we load
-                  'floor_default':'Wall-000', #If there's no wall texture available what do we load
+                  'wall_dir':'walls/', #default subdirectory for walls
                   'perspective':True, #View in perspecitve mode or orthogonal
                   'rot_speed':90, #What speed to we rotate at
                   'player_height':0.6, #Player height
