@@ -9,6 +9,7 @@ rendering_opts = {
                   'textures':True, #Render with textures
                   'tex_dir':'textures/', #default_textures directory
                   'wall_dir':'walls/', #default subdirectory for walls
+                  'sprite_dir':'sprites/',#default subdirectory for sprites
                   'perspective':True, #View in perspecitve mode or orthogonal
                   'rot_speed':90, #What speed to we rotate at
                   'player_height':0.6, #Player height

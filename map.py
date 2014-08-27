@@ -16,7 +16,7 @@ get_sides = lambda x,y: [(x,y+1),(x,y-1),(x+1,y),(x-1,y)]
 
 class GameMap(object):
     
-    def __init__(self,wall_layout):
+    def __init__(self,wall_layout,object_list):
         
 
         self.wall_layout = wall_layout
@@ -36,6 +36,8 @@ class GameMap(object):
         self.floor = Floor(self.w, self.h, 1)
         self.ceiling = Celing(self.w,self.h,2)
         
+        self.object_list = object_list
+
         
     def add_player(self,start_x,start_y):
         p = Player(self,start_x,start_y)
@@ -95,9 +97,14 @@ class GameMap(object):
             for cube in self.cubes.values():
                 cube.render()
                 
+            #draw the floor, draw the ceiling
             self.floor.render()
             self.ceiling.render()
-                
+            
+            #Draw the objects
+            for obj in self.object_list:
+                obj.render()
+
                 
             # End the display list
             glEndList()

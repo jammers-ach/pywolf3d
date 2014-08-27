@@ -15,6 +15,7 @@ from gameobjects.matrix44 import *
 from gameobjects.vector3 import *
 from cube import Cube
 from map import GameMap
+from sprite import MObject
 
 def resize(width, height):
     
@@ -64,6 +65,7 @@ test_map  = [[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
              [6,6,6,6,6,1,1,1,1,1,1,1,1,1,1,1,1,1]]
 
 
+
 def run():
     
     pygame.init()
@@ -79,8 +81,9 @@ def run():
     
 
     # This object renders the 'map'
-    print test_map
-    game_map = GameMap(test_map)        
+    #print test_map
+    object_list = [ MObject(2,2,1)]
+    game_map = GameMap(test_map,object_list)        
     player = game_map.add_player(1, 2)
 
 
