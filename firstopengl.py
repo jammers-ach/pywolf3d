@@ -44,7 +44,10 @@ def init():
     glEnable(GL_LIGHTING)
     glEnable(GL_LIGHT0)        
     glLight(GL_LIGHT0, GL_POSITION,  (0, 1, 1, 0))    
+    glEnable (GL_BLEND)
+    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA)
     
+    #glBlendFunc (GL_ONE, GL_ONE)
 
 #test_map = [[1,1,1,1],[0,0,0,0],[0,0,0,0],[0,1,0,0],[1,1,1,1]]    
 #test_map = generate_maze(20,20)
@@ -112,9 +115,9 @@ def run():
         glLight(GL_LIGHT0, GL_POSITION,  (0, 1.5, 1, 0)) 
                 
         # Render the map
-        game_map.render()
         game_map.objects_render(player)
-        
+        game_map.render()
+
                 
         # Show the screen
         pygame.display.flip()

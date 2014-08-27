@@ -16,4 +16,5 @@ rendering_opts = {
                   'movement_speed':5.0, #Movement speed default
                   'wall_backoff':0.3, #Of far from the wall we render so we don't see
                   'darken_factor':0.5, #How much do we darken the two surfaces by
+                  'transparent_colour':(152,0,136),#rgb of that transparent colour
                   }

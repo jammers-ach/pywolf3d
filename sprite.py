@@ -1,5 +1,5 @@
 #Sprite - Information for game sprites and objects
-from textures import load_texture,prep_texture
+from textures import load_translarent_texture,prep_texture
 import os
 from game_options import rendering_opts
 from gameobjects.vector3 import *
@@ -22,7 +22,7 @@ def load_sprites():
     sprite_mapping = {}
     a = os.path.join(rendering_opts['sprite_dir'],'Sprite-227.png')
 
-    sprite_mapping[1] = {'texture':load_texture(a,darken=False)[0]}
+    sprite_mapping[1] = {'texture':load_translarent_texture(a)}
 
 def remap_to_camera(camera_vector,verticies,pos):
     '''takes coordinates of 4 verticies, and the camera y angle and 

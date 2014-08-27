@@ -141,16 +141,16 @@ class Cube(object):
         glEnd()
         
 
-        if(self.top_face in self.rendered_normals):
-            glColor( black )
-            glBegin(GL_QUADS)
-            glNormal3dv( self.normals[self.top_face] )
-            v1, v2, v3, v4 = self.vertex_indices[self.top_face]
-            glVertex( vertices[v1] )
-            glVertex( vertices[v2] )
-            glVertex( vertices[v3] )
-            glVertex( vertices[v4] ) 
-            glEnd()
+        #if(self.top_face in self.rendered_normals):
+        #    glColor( black )
+        #    glBegin(GL_QUADS)
+        #    glNormal3dv( self.normals[self.top_face] )
+        #    v1, v2, v3, v4 = self.vertex_indices[self.top_face]
+        #    glVertex( vertices[v1] )
+        #    glVertex( vertices[v2] )
+        #    glVertex( vertices[v3] )
+        #    glVertex( vertices[v4] ) 
+        #    glEnd()
         
 
     def render_color(self):                
