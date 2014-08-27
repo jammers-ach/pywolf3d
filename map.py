@@ -84,7 +84,13 @@ class GameMap(object):
                     rendered_normals.append(4)
                     self.cubes[(x,y)].rendered_normals = rendered_normals
  
-    
+   
+    def objects_render(self,player):
+        '''Renders the object, which need a player so they can face the camera'''
+        for obj in self.object_list:
+            obj.render(player.camera_matrix.get_row_vec3(0))
+
+
     def render(self):
                 
         if self.display_list is None:
@@ -100,12 +106,7 @@ class GameMap(object):
             #draw the floor, draw the ceiling
             self.floor.render()
             self.ceiling.render()
-            
-            #Draw the objects
-            for obj in self.object_list:
-                obj.render()
-
-                
+                           
             # End the display list
             glEndList()
             

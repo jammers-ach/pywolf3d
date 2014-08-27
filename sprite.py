@@ -5,13 +5,15 @@ from game_options import rendering_opts
 from gameobjects.vector3 import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
-
+import math
 sprite_mapping = None
 
 sprite_mapping = None
 
 sprite_height = 1.0
 sprite_width = 1.0
+
+
 
 def load_sprites():
     global sprite_mapping
@@ -21,6 +23,19 @@ def load_sprites():
     a = os.path.join(rendering_opts['sprite_dir'],'Sprite-227.png')
 
     sprite_mapping[1] = {'texture':load_texture(a,darken=False)[0]}
+
+def remap_to_camera(camera_vector,verticies,pos):
+    '''takes coordinates of 4 verticies, and the camera y angle and 
+    rotates the coordinates to face the camera'''
+    #rotate
+    i,j,k = camera_vector
+    v = [(i*x,y,k*x) for x,y,z in verticies] #in each case x is the 'length', y doesn't change and z mirros x
+    #It needs a diagram
+
+    #translate
+    v = [(x+pos[0]+0.5,y,z+pos[1]+0.5) for x,y,z in v]
+
+    return v
 
 class MObject(object): 
     '''A map object'''
@@ -34,30 +49,29 @@ class MObject(object):
 
         self.obj_type = obj_type
         self.sprite = sprite_mapping[obj_type]
-        
-        w = sprite_width
-        h = sprite_height
-        #put us in the middle of the square facing n/s
-        self.vertices = ((x,0,y+0.5),(x+w,0,y+0.5),(x+w,1,y+0.5),(x,1,y+0.5))
+      
+        #These aren't the verticies of the object, but the verticies of the coords
+        #relative to a centre about which we rotate
+        self.vertices = ((-0.5,0,0),(0.5,0,0),(0.5,1,0),(-0.5,1,0))
 
         self.t_index = [  (0.0, 0.0),
-                 (w, 0.0),
-                 (w, h),
-                 (0.0, h), ]
+                 (sprite_height, 0.0),
+                 (sprite_height, sprite_width),
+                 (0.0, sprite_width), ]
     
-    def render(self,camera_coords):
+    def render(self,camera_vector):
         '''In wolf3d sprites always faced the player
         we can't do that nicely here, so we have to render
         a texture that always faces the camera
         
         this will render the object so that it faces the camera coordinates'''
 
-
         prep_texture(self.sprite['texture'])
         glBegin(GL_QUADS)
         
         glNormal3dv( (0.0, +1.0, 0.0) )
-        v1, v2, v3, v4 = self.vertices
+        vertices = remap_to_camera(camera_vector,self.vertices,(self.x,self.y))
+        v1, v2, v3, v4 = vertices
         glTexCoord2fv(self.t_index[0])
         glVertex( v1 )
         glTexCoord2fv(self.t_index[1])

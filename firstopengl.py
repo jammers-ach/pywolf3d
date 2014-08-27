@@ -84,7 +84,7 @@ def run():
     #print test_map
     object_list = [ MObject(2,2,1)]
     game_map = GameMap(test_map,object_list)        
-    player = game_map.add_player(1, 2)
+    player = game_map.add_player(2, 3)
 
 
     while True:
@@ -113,6 +113,7 @@ def run():
                 
         # Render the map
         game_map.render()
+        game_map.objects_render(player)
         
                 
         # Show the screen
