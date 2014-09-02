@@ -1,5 +1,5 @@
 #Sprite - Information for game sprites and objects
-from textures import load_translarent_texture,prep_texture
+from textures import load_translarent_texture,bind_texture
 import os
 from game_options import rendering_opts
 from gameobjects.vector3 import *
@@ -66,7 +66,7 @@ class MObject(object):
         
         this will render the object so that it faces the camera coordinates'''
 
-        prep_texture(self.sprite['texture'])
+        bind_texture(self.sprite['texture'])
         glBegin(GL_QUADS)
         
         glNormal3dv( (0.0, +1.0, 0.0) )

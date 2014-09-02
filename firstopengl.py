@@ -115,9 +115,9 @@ def run():
         glLight(GL_LIGHT0, GL_POSITION,  (0, 1.5, 1, 0)) 
                 
         # Render the map
-        game_map.objects_render(player)
         game_map.render()
-
+        game_map.objects_render(player)
+       
                 
         # Show the screen
         pygame.display.flip()

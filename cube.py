@@ -12,16 +12,17 @@ from pygame.locals import *
 from os import listdir
 from os.path import isfile, join
 
-from textures import prep_texture
+from textures import bind_texture
 from game_options import rendering_opts
 
 from wall_loader import load_walls
 
 
 #if we're rendering colours
-default_colour = (1,1,1)
+default_colour = (1,1,1,1)
 black = (0,0,0)
 
+colour_maps = {}
 
 darken_colour = lambda x:(x[0]* rendering_opts['darken_factor'],\
                           x[1]* rendering_opts['darken_factor'],\
@@ -30,6 +31,8 @@ darken_colour = lambda x:(x[0]* rendering_opts['darken_factor'],\
 wall_types = None
 flat_types = None
 default_texture=None
+
+
 
 def load_textures():
     global wall_types
@@ -97,7 +100,7 @@ class Cube(object):
     def render_texture(self):
 
         #Load dark texture
-        prep_texture(self.wall_type.texture1)
+        bind_texture(self.wall_type.texture1)
         vertices = [tuple(Vector3(v) + self.position) for v in self.vertices]
         
         glBegin(GL_QUADS)
@@ -121,7 +124,7 @@ class Cube(object):
         glEnd()
         
         #Now the dark faces
-        prep_texture(self.wall_type.texture2)
+        bind_texture(self.wall_type.texture2)
         
         glBegin(GL_QUADS)
         for face_no in self.dark_faces:
@@ -156,7 +159,7 @@ class Cube(object):
     def render_color(self):                
         
         gl_col = colour_maps.get(self.wall_type,default_colour)
-
+        glEnable(GL_COLOR_MATERIAL)
         glColor( gl_col )
     
         # Adjust all the vertices so that the cube is at self.position
@@ -179,7 +182,7 @@ class Cube(object):
         glEnd()
         
         #now the light side
-        gl_col = darken_colour(colour_maps.get(self.wall_type,default_colour))
+        #gl_col = darken_colour(colour_maps.get(self.wall_type,default_colour))
         glColor( gl_col )
         
         glBegin(GL_QUADS)
@@ -251,7 +254,7 @@ class FlatSurface(object):
         
         
     def render_texture(self):
-        prep_texture(self.flat_type.texture)
+        bind_texture(self.flat_type.texture)
         glBegin(GL_QUADS)
         
         glNormal3dv( (0.0, +1.0, 0.0) )
