@@ -41,9 +41,9 @@ def init():
 
     glEnable(GL_COLOR_MATERIAL)
     
-    glEnable(GL_LIGHTING)
-    glEnable(GL_LIGHT0)        
-    glLight(GL_LIGHT0, GL_POSITION,  (0, 1, 1, 0))    
+    #glEnable(GL_LIGHTING)
+    #glEnable(GL_LIGHT0)        
+    #glLight(GL_LIGHT0, GL_POSITION,  (0, 1, 1, 0))    
     glEnable (GL_BLEND)
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA)
     
