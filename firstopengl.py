@@ -85,7 +85,7 @@ def run():
 
     # This object renders the 'map'
     #print test_map
-    object_list = [ MObject(2,2,1)]
+    object_list = [ MObject(2,2,1),MObject(2,3,2),MObject(2,4,1),MObject(1,1,1)]
     game_map = GameMap(test_map,object_list)        
     player = game_map.add_player(2, 3)
 

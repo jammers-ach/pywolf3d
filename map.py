@@ -10,6 +10,7 @@ from cube import Cube,Floor, Celing
 import pygame
 from pygame.locals import *
 from player import Player
+from gameobjects.util import linear_distance
 
 
 get_sides = lambda x,y: [(x,y+1),(x,y-1),(x+1,y),(x-1,y)]
@@ -84,10 +85,26 @@ class GameMap(object):
                     rendered_normals.append(4)
                     self.cubes[(x,y)].rendered_normals = rendered_normals
  
-   
+  
+
+
+    def _sort_objects(self,player):
+        '''Sorts all the objects by distance to the player so they are rendered int he right order'''
+        posx = player.x
+        posy = player.y
+
+        self.sorted_objects = []
+
+        for obj in self.object_list:
+            distance = linear_distance((posx,posy),(obj.x,obj.y)) 
+            self.sorted_objects.append((distance,obj))
+
+        self.sorted_objects = sorted(self.sorted_objects,reverse=True)
+
     def objects_render(self,player):
         '''Renders the object, which need a player so they can face the camera'''
-        for obj in self.object_list:
+        self._sort_objects(player)
+        for dist,obj in self.sorted_objects:
             obj.render(player.camera_matrix.get_row_vec3(0))
 
 

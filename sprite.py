@@ -20,9 +20,12 @@ def load_sprites():
     #Just load in one texture for now while we are testing
 
     sprite_mapping = {}
-    a = os.path.join(rendering_opts['sprite_dir'],'Sprite-227.png')
+    a = os.path.join(rendering_opts['sprite_dir'],'Sprite-229.png')
+    b = os.path.join(rendering_opts['sprite_dir'],'Sprite-250.png')
 
     sprite_mapping[1] = {'texture':load_translarent_texture(a)}
+    sprite_mapping[2] = {'texture':load_translarent_texture(b)}
+
 
 def remap_to_camera(camera_vector,verticies,pos):
     '''takes coordinates of 4 verticies, and the camera y angle and 
@@ -82,4 +85,6 @@ class MObject(object):
         glVertex( v4 ) 
         glEnd()
 
-        
+
+
+
