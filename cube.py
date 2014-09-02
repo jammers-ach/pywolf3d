@@ -241,9 +241,11 @@ class Door(Cube):
         if(self.door_type.north_south):
             self.side_faces = [0,1]
             self.door_faces = [2,3]
+            self.door_offset = [0.5,0,0]
         else:
             self.side_faces = [2,3]
             self.door_faces = [0,1]
+            self.door_offset = [0,0,0.5]
     
     
     def render_texture(self):       
@@ -267,7 +269,7 @@ class Door(Cube):
         glEnd()
 
         #Now render the door
-        vertices = [tuple(Vector3(v) + self.position) for v in self.door_vertices]
+        vertices = [tuple(Vector3(v) + self.position - self.door_offset) for v in self.door_vertices]
 
         bind_texture(self.door_type.door_texture)
         print self.door_faces[0]
