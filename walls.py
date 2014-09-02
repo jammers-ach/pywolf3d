@@ -35,3 +35,16 @@ class FlatType(object):
         self.texture = load_wall(self.texture_path)
 
 
+class DoorType(object):
+    '''Gives us information about a door'''
+    def __init__(self,code,name,door_texture,side_texture,north_south):
+        self.code = code
+        self.name = name
+        self.door_texture_path = door_texture
+        self.side_texture_path = side_texture
+        self.north_south=north_south
+
+    def load_textures(self):
+        self.door_texture = load_wall(self.door_texture_path)
+        self.side_texture = load_wall(self.side_texture_path)
+

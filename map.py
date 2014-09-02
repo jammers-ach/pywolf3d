@@ -6,12 +6,13 @@ Created on 21 Aug 2014
 from gameobjects.vector3 import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
-from cube import Cube,Floor, Celing
+from cube import Cube,Floor, Celing,Door
 import pygame
 from pygame.locals import *
 from player import Player
 from gameobjects.util import linear_distance
 from things import ImmovableThing,PickupThing
+from game_options import rendering_opts
 
 get_sides = lambda x,y: [(x,y+1),(x,y-1),(x+1,y),(x-1,y)]
 
@@ -96,11 +97,16 @@ class GameMap(object):
                 
                 try:
                     wall_type = self.wall_layout[x][y]
-                    if(wall_type != 0):
+                    if(wall_type != 0 ):
                         
                         position = (float(x), 0.0, float(y))
-                        cube = Cube( position, wall_type )
-                        self.cubes[(x,y)] = cube            
+
+                        if(wall_type >= rendering_opts['door_start_code']):
+                            cube = Door( position, wall_type - rendering_opts['door_start_code'])
+                            self.cubes[(x,y)] = cube
+                        else:
+                            cube = Cube( position, wall_type )
+                            self.cubes[(x,y)] = cube            
                 except IndexError,e:
                     #TODO log me nicely
                     pass

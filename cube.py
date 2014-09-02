@@ -30,6 +30,7 @@ darken_colour = lambda x:(x[0]* rendering_opts['darken_factor'],\
 
 wall_types = None
 flat_types = None
+door_types = None
 default_texture=None
 
 
@@ -38,8 +39,9 @@ def load_textures():
     global wall_types
     global flat_types
     global default_texture
+    global door_types
     
-    wall_types,flat_types = load_walls()
+    wall_types,flat_types,door_types = load_walls()
     
 
 class Cube(object):
@@ -98,7 +100,6 @@ class Cube(object):
         
         
     def render_texture(self):
-
         #Load dark texture
         bind_texture(self.wall_type.texture1)
         vertices = [tuple(Vector3(v) + self.position) for v in self.vertices]
@@ -213,7 +214,90 @@ class Cube(object):
         
         
         
+
+class Door(Cube):
+    '''A door, that you can open'''
+
+    door_vertices = [ (0.0, 0.0, 1.0),
+                 (1.0, 0.0, 1.0),
+                 (1.0, 1.0, 1.0),
+                 (0.0, 1.0, 1.0),
+                 (0.0, 0.0, 0.0),
+                 (1.0, 0.0, 0.0),
+                 (1.0, 1.0, 0.0),
+                 (0.0, 1.0, 0.0) ]
+
+
+    def __init__(self,position,door_type):
+        self.position = position
+        self.door_type_code = door_type
+
+        if(not door_types):
+            load_textures()
         
+        print door_types
+        self.door_type = door_types[door_type]
+
+        if(self.door_type.north_south):
+            self.side_faces = [0,1]
+            self.door_faces = [2,3]
+        else:
+            self.side_faces = [2,3]
+            self.door_faces = [0,1]
+    
+    
+    def render_texture(self):       
+        bind_texture(self.door_type.side_texture)
+        vertices = [tuple(Vector3(v) + self.position) for v in self.vertices]
+
+        glBegin(GL_QUADS)
+        for face_no in self.side_faces:
+            glNormal3dv( self.normals[face_no] )
+                
+            v1, v2, v3, v4 = self.vertex_indices[face_no]
+            
+            glTexCoord2fv(self.t_index[0])
+            glVertex( vertices[v1] )
+            glTexCoord2fv(self.t_index[1])
+            glVertex( vertices[v2] )
+            glTexCoord2fv(self.t_index[2])
+            glVertex( vertices[v3] )
+            glTexCoord2fv(self.t_index[3])
+            glVertex( vertices[v4] ) 
+        glEnd()
+
+        #Now render the door
+        vertices = [tuple(Vector3(v) + self.position) for v in self.door_vertices]
+
+        bind_texture(self.door_type.door_texture)
+        print self.door_faces[0]
+        glBegin(GL_QUADS)
+        glNormal3dv( self.normals[self.door_faces[0]] )
+        v1, v2, v3, v4 = self.vertex_indices[self.door_faces[0]]
+        glTexCoord2fv(self.t_index[0])
+        glVertex( vertices[v1] )
+        glTexCoord2fv(self.t_index[1])
+        glVertex( vertices[v2] )
+        glTexCoord2fv(self.t_index[2])
+        glVertex( vertices[v3] )
+        glTexCoord2fv(self.t_index[3])
+        glVertex( vertices[v4] ) 
+        glEnd()
+
+        
+
+        #if(self.top_face in self.rendered_normals):
+        #    glColor( black )
+        #    glBegin(GL_QUADS)
+        #    glNormal3dv( self.normals[self.top_face] )
+        #    v1, v2, v3, v4 = self.vertex_indices[self.top_face]
+        #    glVertex( vertices[v1] )
+        #    glVertex( vertices[v2] )
+        #    glVertex( vertices[v3] )
+        #    glVertex( vertices[v4] ) 
+        #    glEnd()
+        
+
 
 class FlatSurface(object):
     '''

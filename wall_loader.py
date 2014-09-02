@@ -1,6 +1,6 @@
 # Jammers 27/08/14
 # Loads the wall config file into the game
-from walls import WallType,FlatType
+from walls import WallType,FlatType,DoorType
 import ConfigParser
 
 wall_config = 'defs/wall_def.cfg'
@@ -35,12 +35,30 @@ def parseFlat(config,section_name):
     w = FlatType(code,d,t)
     return w
 
+def parseDoor(config,section_name):
+    '''Loads a door'''
+    try:
+        code = int(section_name.replace('Door',''))
+    except ValueError:
+        print "ERROR: %s isn't a valid wall code" % (section_name)
+        return
+
+    #print code, config.items(section_name)
+    d = config.get(section_name,'description')
+    t = config.get(section_name,'texture')
+    t2 = config.get(section_name,'sides')
+    ns = config.getboolean(section_name,'northsouth')
+    w = DoorType(code,d,t,t2,ns)
+    return w
+
+
 
 def load_walls():
     config = ConfigParser.ConfigParser()    
     config.read(wall_config)
     walls = {}
     flats = {}
+    doors = {}
 
     #Go through each section, putting things into either walls or doors etc
     for i in config.sections():
@@ -60,7 +78,16 @@ def load_walls():
                     f.load_textures()
                 else:
                     print 'ERROR: %s already in config' %i
+        elif(i.startswith('Door')):
+            f = parseDoor(config,i)
+            if(f != None):
+                if(f.code not in doors):
+                    doors[f.code] = f
+                    f.load_textures()                 
+                else:
+                    print 'ERROR: %s already in config' %i
+
         else:
             print 'ERROR: unown wall def %s' %i
 
-    return walls,flats
+    return walls,flats,doors

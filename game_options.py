@@ -17,5 +17,6 @@ rendering_opts = {
                   'wall_backoff':0.3, #Of far from the wall we render so we don't see
                   'darken_factor':0.5, #How much do we darken the two surfaces by
                   'transparent_colour':(152,0,136),#rgb of that transparent colour
-                  'fps':None,
+                  'fps':None, #How many FPS should we limit ourselves to?
+                  'door_start_code':10,#When do wall codes and and door codes being?
                   }
