@@ -20,7 +20,7 @@ def load_sprites():
     #Just load in one texture for now while we are testing
 
     sprite_mapping = {}
-    a = os.path.join(rendering_opts['sprite_dir'],'Sprite-229.png')
+    a = os.path.join(rendering_opts['sprite_dir'],'Sprite-251.png')
     b = os.path.join(rendering_opts['sprite_dir'],'Sprite-250.png')
     c = os.path.join(rendering_opts['sprite_dir'],'Sprite-205.png')
 

@@ -79,7 +79,7 @@ class GameMap(object):
 
     def handle_pickups(self,player):
         '''picks up any objects the player might be standing on'''
-        print 'pickups'
+        #print 'pickups'
         pos = (int(player.x),int(player.y))
         if(pos in self.pickups and self.pickups[pos] != []):
             for obj in self.pickups[pos]:
