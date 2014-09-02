@@ -80,4 +80,6 @@ class Player(object):
                 self.camera_matrix[3,0] = self.x + movement_x
                 self.x = self.x + movement_x
 
-        
+        if(movement_x != 0 or movement_y != 0):
+
+            self.game_map.handle_pickups(self)

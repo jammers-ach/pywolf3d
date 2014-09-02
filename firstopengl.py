@@ -15,7 +15,9 @@ from gameobjects.matrix44 import *
 from gameobjects.vector3 import *
 from cube import Cube
 from map import GameMap
-from sprite import MObject
+#from sprite import MObject
+from things import ImmovableThing, PassableThing, PickupThing
+
 
 def resize(width, height):
     
@@ -68,6 +70,7 @@ test_map  = [[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
              [6,6,6,6,6,1,1,1,1,1,1,1,1,1,1,1,1,1]]
 
 
+FPS=rendering_opts['fps']
 
 def run():
     
@@ -85,7 +88,7 @@ def run():
 
     # This object renders the 'map'
     #print test_map
-    object_list = [ MObject(2,2,1),MObject(2,3,2),MObject(2,4,1),MObject(1,1,1)]
+    object_list = [ ImmovableThing(2,2,3),PassableThing(2,3,2),PickupThing(2,4,1),PickupThing(1,1,1)]
     game_map = GameMap(test_map,object_list)        
     player = game_map.add_player(2, 3)
 
@@ -100,8 +103,12 @@ def run():
             
         # Clear the screen, and z-buffer
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-                        
-        time_passed = clock.tick()
+        
+
+        if(FPS):
+            time_passed = clock.tick(FPS)
+        else:
+            time_passed = clock.tick()
         time_passed_seconds = time_passed / 1000.
         
         pressed = pygame.key.get_pressed()
@@ -118,7 +125,6 @@ def run():
         game_map.render()
         game_map.objects_render(player)
        
-                
         # Show the screen
         pygame.display.flip()
 

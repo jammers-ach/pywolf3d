@@ -22,9 +22,14 @@ def load_sprites():
     sprite_mapping = {}
     a = os.path.join(rendering_opts['sprite_dir'],'Sprite-229.png')
     b = os.path.join(rendering_opts['sprite_dir'],'Sprite-250.png')
+    c = os.path.join(rendering_opts['sprite_dir'],'Sprite-205.png')
+
 
     sprite_mapping[1] = {'texture':load_translarent_texture(a)}
     sprite_mapping[2] = {'texture':load_translarent_texture(b)}
+    sprite_mapping[3] = {'texture':load_translarent_texture(c)}
+
+
 
 
 def remap_to_camera(camera_vector,verticies,pos):
