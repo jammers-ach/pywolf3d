@@ -38,18 +38,9 @@ def make_transparent(surface):
     for x in range(ix):
         for y in range(iy):
             r,b,g,a = surface.get_at((x,y))
-            #print r,b,g,a
             if((r,b,g) == rendering_opts['transparent_colour']):
                 a = 0
-                r = 255
-                g = 0
-                b = 0
-                #print a,
-            #print a,
-            if(a != 255):
-                print 'no a',r,g,b,a
             surface.set_at((x,y),(r,b,g,a))
-        #print ''
 
     
 def load_translarent_texture(imageName):

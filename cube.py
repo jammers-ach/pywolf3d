@@ -235,7 +235,7 @@ class Door(Cube):
         if(not door_types):
             load_textures()
         
-        print door_types
+        #print door_types
         self.door_type = door_types[door_type]
 
         if(self.door_type.north_south):
@@ -272,7 +272,7 @@ class Door(Cube):
         vertices = [tuple(Vector3(v) + self.position - self.door_offset) for v in self.door_vertices]
 
         bind_texture(self.door_type.door_texture)
-        print self.door_faces[0]
+        #print self.door_faces[0]
         glBegin(GL_QUADS)
         glNormal3dv( self.normals[self.door_faces[0]] )
         v1, v2, v3, v4 = self.vertex_indices[self.door_faces[0]]
