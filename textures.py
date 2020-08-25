@@ -91,7 +91,7 @@ def load_texture(imageName,darken=True):
                 GL_RGBA, GL_UNSIGNED_BYTE, dark_image
             )
     
-    print "TEXTURE: loaded %s" % p
+    print("TEXTURE: loaded %s" % p)
     return ID,ID2
 
 def bind_texture(texture):

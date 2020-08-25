@@ -24,10 +24,10 @@ def can_demolish(maze,a1,a2,w,h):
     
     sides = filter_sides(get_sides(a2),w,h)
     sides.remove(a1)
-    print 'testing',a2,'from',a1,'on sides',sides
+    print(('testing',a2,'from',a1,'on sides',sides))
     for x,y in sides:
         if(maze[x][y] == 0):
-            print 'no wall at',(x,y)
+            print(('no wall at',(x,y)))
             return False
         
     return True
@@ -63,7 +63,7 @@ def generate_maze(w,h,start=(1,1)):
         walls.remove(a)
     #Print the maze
     for r in maze:
-        print r
+        print(r)
                   
         
     return maze
