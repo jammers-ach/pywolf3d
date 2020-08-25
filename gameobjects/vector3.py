@@ -1,5 +1,5 @@
 from math import *
-from util import format_number
+from .util import format_number
 
 
 
@@ -14,13 +14,13 @@ class Vector3(object):
                 
         """
         if len(args) == 3:
-            self._v = map(float, args[:3])            
+            self._v = list(map(float, args[:3]))            
             return
         
         if not args:
             self._v = [0., 0., 0.]
         elif len(args) == 1:
-            self._v = map(float, args[0][:3])                        
+            self._v = list(map(float, args[0][:3]))                        
         else:
             raise ValueError("Vector3.__init__ takes 0, 1 or 3 parameters")
 
@@ -72,7 +72,7 @@ class Vector3(object):
         """Creates a Vector3 from an iterable containing at least 3 values."""
         it = iter(iterable)
         v = cls.__new__(cls, object)
-        v._v = [ float(it.next()), float(it.next()), float(it.next()) ]        
+        v._v = [ float(next(it)), float(next(it)), float(next(it)) ]        
         return v
     
     def copy():
@@ -174,7 +174,7 @@ class Vector3(object):
         try:
             return self._v[index]
         except IndexError:
-            raise IndexError, "There are 3 values in this object, index should be 0, 1 or 2!"                        
+            raise IndexError("There are 3 values in this object, index should be 0, 1 or 2!")                        
         
     def __setitem__(self, index, value):
         
@@ -182,7 +182,7 @@ class Vector3(object):
             assert isinstance(value, float), "Must be a float"
             self._v[index] = value
         except IndexError:
-            raise IndexError, "There are 3 values in this object, index should be 0, 1 or 2!"
+            raise IndexError("There are 3 values in this object, index should be 0, 1 or 2!")
 
 
     def __add__(self, rhs):
@@ -312,7 +312,7 @@ class Vector3(object):
         return self
     
     
-    def __nonzero__(self):
+    def __bool__(self):
         
         x, y, z = self._v
         return x and y and z
@@ -484,52 +484,52 @@ if __name__ == "__main__":
     
     v1 = Vector3(2.2323, 3.43242, 1.)
     
-    print (1, 2, 3)+v1
-    print v1('xxxyyyzzz')
-    print v1[2]
-    print v1.z
+    print((1, 2, 3)+v1)
+    print(v1('xxxyyyzzz'))
+    print(v1[2])
+    print(v1.z)
     v1[2]=5.
-    print v1    
+    print(v1)    
     v2= Vector3(1.2, 5, 10)
-    print v2
+    print(v2)
     v1 += v2
-    print v1.get_length()
-    print repr(v1)
-    print v1[1]
+    print(v1.get_length())
+    print(repr(v1))
+    print(v1[1])
     
     p1 = Vector3(1,2,3)
-    print p1
-    print repr(p1)    
+    print(p1)
+    print(repr(p1))    
     
     for v in p1:
-        print v
+        print(v)
         
     #print p1[6]
     
     ptest = Vector3( [1,2,3] )
-    print ptest
+    print(ptest)
     
     z = Vector3()
-    print z
+    print(z)
         
     file("test.txt", "w").write( "\n".join(str(float(n)) for n in range(20)) )
     f = file("test.txt")
     v1 = Vector3.from_iter( f )
     v2 = Vector3.from_iter( f )
     v3 = Vector3.from_iter( f ) 
-    print v1, v2, v3
+    print(v1, v2, v3)
     
-    print "--"
-    print v1
-    print v1 + (10,20,30)
+    print("--")
+    print(v1)
+    print(v1 + (10,20,30))
     
-    print v1('xz')
+    print(v1('xz'))
     
-    print -v1
+    print(-v1)
 
     #print tuple(ptest)
     #p1.set( (4, 5, 6) )
     #print p1
     
-    print Vector3(10,10,30)+v1
+    print(Vector3(10,10,30)+v1)
     

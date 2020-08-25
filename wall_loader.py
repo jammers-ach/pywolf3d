@@ -1,7 +1,7 @@
 # Jammers 27/08/14
 # Loads the wall config file into the game
 from walls import WallType,FlatType,DoorType
-import ConfigParser
+import configparser
 
 wall_config = 'defs/wall_def.cfg'
 
@@ -10,7 +10,7 @@ def parseWall(config,section_name):
     try:
         code = int(section_name.replace('Wall',''))
     except ValueError:
-        print "ERROR: %s isn't a valid wall code" % (section_name)
+        print("ERROR: %s isn't a valid wall code" % (section_name))
         return
 
 
@@ -26,7 +26,7 @@ def parseFlat(config,section_name):
     try:
         code = int(section_name.replace('Flat',''))
     except ValueError:
-        print "ERROR: %s isn't a valid wall code" % (section_name)
+        print("ERROR: %s isn't a valid wall code" % (section_name))
         return
 
     #print code, config.items(section_name)
@@ -40,7 +40,7 @@ def parseDoor(config,section_name):
     try:
         code = int(section_name.replace('Door',''))
     except ValueError:
-        print "ERROR: %s isn't a valid wall code" % (section_name)
+        print("ERROR: %s isn't a valid wall code" % (section_name))
         return
 
     #print code, config.items(section_name)
@@ -54,7 +54,7 @@ def parseDoor(config,section_name):
 
 
 def load_walls():
-    config = ConfigParser.ConfigParser()    
+    config = configparser.ConfigParser()    
     config.read(wall_config)
     walls = {}
     flats = {}
@@ -69,7 +69,7 @@ def load_walls():
                     walls[w.code] = w
                     w.load_textures()
                 else:
-                    print 'ERROR: %s already in config' % i
+                    print('ERROR: %s already in config' % i)
         elif(i.startswith('Flat')):
             f = parseFlat(config,i)
             if(f != None):
@@ -77,7 +77,7 @@ def load_walls():
                     flats[f.code] = f
                     f.load_textures()
                 else:
-                    print 'ERROR: %s already in config' %i
+                    print('ERROR: %s already in config' %i)
         elif(i.startswith('Door')):
             f = parseDoor(config,i)
             if(f != None):
@@ -85,9 +85,9 @@ def load_walls():
                     doors[f.code] = f
                     f.load_textures()                 
                 else:
-                    print 'ERROR: %s already in config' %i
+                    print('ERROR: %s already in config' %i)
 
         else:
-            print 'ERROR: unown wall def %s' %i
+            print('ERROR: unown wall def %s' %i)
 
     return walls,flats,doors

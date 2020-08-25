@@ -17,27 +17,27 @@ from game_options import rendering_opts
 get_sides = lambda x,y: [(x,y+1),(x,y-1),(x+1,y),(x-1,y)]
 
 class GameMap(object):
-    
+
     def __init__(self,wall_layout,object_list):
-        
+
 
         self.wall_layout = wall_layout
-        
+
         self.w = len(wall_layout)
         self.h = len(wall_layout[1])
-        
+
         self.cubes = {}
-        
+
 
         self.display_list = None
         self.generate_cubes()
         self.update_cube_walls()
         self.players = []
-        
+
         #For now just 1 floor
         self.floor = Floor(self.w, self.h, 1)
         self.ceiling = Celing(self.w,self.h,2)
-        
+
         self.object_list = object_list
         self._make_object_lists()
 
@@ -58,7 +58,7 @@ class GameMap(object):
         p = Player(self,start_x,start_y)
         self.players.append(p)
         return p
-    
+
     def can_go(self,x,y):
         '''Can an object go into square x,y?
             checks for walls/immovable objects
@@ -68,7 +68,7 @@ class GameMap(object):
         try:
             if(self.wall_layout[int(x)][int(y)] != 0):
                 return False
-        except IndexError,e:
+        except IndexError as e:
             return False
 
         #Now look through the objects
@@ -88,17 +88,17 @@ class GameMap(object):
                     self.pickups[pos].remove(obj)
                     self.object_list.remove(obj)
                     del obj
-        
+
     def generate_cubes(self):
         '''generates all the cubes'''
         #Go throught he wall definitation and create cubes for all the no 0
-        for y in range(self.h):            
+        for y in range(self.h):
             for x in range(self.w):
-                
+
                 try:
                     wall_type = self.wall_layout[x][y]
                     if(wall_type != 0 ):
-                        
+
                         position = (float(x), 0.0, float(y))
 
                         if(wall_type >= rendering_opts['door_start_code']):
@@ -106,26 +106,26 @@ class GameMap(object):
                             self.cubes[(x,y)] = cube
                         else:
                             cube = Cube( position, wall_type )
-                            self.cubes[(x,y)] = cube            
-                except IndexError,e:
+                            self.cubes[(x,y)] = cube
+                except IndexError as e:
                     #TODO log me nicely
                     pass
 
-    
+
     def update_cube_walls(self):
         '''Finds out which walls of each cube need to be rendered'''
-        for y in range(self.h):            
+        for y in range(self.h):
             for x in range(self.w):
                 if((x,y) in self.cubes):
                     check = [(x,y+1),(x,y-1),(x+1,y),(x-1,y)]
                     rendered_normals = []
-                    for i in xrange(len(check)):
+                    for i in range(len(check)):
                         if(check[i] not in self.cubes or self.cubes[check[i]] == 0 ):
                             rendered_normals.append(i)
                     rendered_normals.append(4)
                     self.cubes[(x,y)].rendered_normals = rendered_normals
- 
-  
+
+
 
 
     def _sort_objects(self,player):
@@ -136,10 +136,10 @@ class GameMap(object):
         self.sorted_objects = []
 
         for obj in self.object_list:
-            distance = linear_distance((posx,posy),(obj.x,obj.y)) 
+            distance = linear_distance((posx,posy),(obj.x,obj.y))
             self.sorted_objects.append((distance,obj))
 
-        self.sorted_objects = sorted(self.sorted_objects,reverse=True)
+        self.sorted_objects = sorted(self.sorted_objects,reverse=True, key=lambda x:x[0])
 
     def objects_render(self,player):
         '''Renders the object, which need a player so they can face the camera'''
@@ -149,25 +149,25 @@ class GameMap(object):
 
 
     def render(self):
-                
+
         if self.display_list is None:
-            
+
             # Create a display list
-            self.display_list = glGenLists(1)                
+            self.display_list = glGenLists(1)
             glNewList(self.display_list, GL_COMPILE)
-            
+
             # Draw the cubes
-            for cube in self.cubes.values():
+            for cube in list(self.cubes.values()):
                 cube.render()
-                
+
             #draw the floor, draw the ceiling
             self.floor.render()
             self.ceiling.render()
-                           
+
             # End the display list
             glEndList()
-            
+
         else:
-            
-            # Render the display list            
+
+            # Render the display list
             glCallList(self.display_list)

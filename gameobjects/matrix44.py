@@ -1,5 +1,5 @@
-from util import format_number
-from vector3 import Vector3
+from .util import format_number
+from .vector3 import Vector3
 
 from math import sin, cos, tan, sqrt, pi, radians
 from copy import deepcopy
@@ -68,19 +68,19 @@ class Matrix44(object):
          
     def _set_row_0(self, values):
         values = tuple(values)[:4]
-        self._m[0:len(values)] = map(float, values)
+        self._m[0:len(values)] = list(map(float, values))
             
     def _set_row_1(self, values):
         values = tuple(values)[:4]
-        self._m[4:4+len(values)] = map(float, values)
+        self._m[4:4+len(values)] = list(map(float, values))
 
     def _set_row_2(self, values):
         values = tuple(values)[:4]
-        self._m[8:8+len(values)] = map(float, values)
+        self._m[8:8+len(values)] = list(map(float, values))
 
     def _set_row_3(self, values):
         values = tuple(values)[:4]
-        self._m[12:12+len(values)] = map(float, values)
+        self._m[12:12+len(values)] = list(map(float, values))
         
     _getters = (_get_row_0, _get_row_1, _get_row_2, _get_row_3)
     _setters = (_set_row_0, _set_row_1, _set_row_2, _set_row_3)
@@ -130,7 +130,7 @@ class Matrix44(object):
         """Creates a Matrix44 from an iterable of 16 values."""
         
         m = cls.__new__(cls, object)        
-        m._m = map(float, iterable)
+        m._m = list(map(float, iterable))
         if len(m._m) != 16:
             raise Matrix44Error("Iterable must have 16 values")
         return m
@@ -505,10 +505,10 @@ class Matrix44(object):
         try:
             col_iter = iter(col)
             m = self._m
-            m[col_no] = float(col_iter.next())
-            m[col_no+4] = float(col_iter.next())
-            m[col_no+8] = float(col_iter.next())
-            m[col_no+12] = float(col_iter.next())
+            m[col_no] = float(next(col_iter))
+            m[col_no+4] = float(next(col_iter))
+            m[col_no+8] = float(next(col_iter))
+            m[col_no+12] = float(next(col_iter))
             
         except IndexError:
             raise IndexError( "Column should be 0, 1, 2 or 3" )
@@ -937,49 +937,49 @@ def test():
     
     m = Matrix44.xyz_rotation(radians(45), radians(20), radians(0))
         
-    print m
+    print(m)
     
-    print "--Transpose"
+    print("--Transpose")
     
-    print m.get_transpose()
+    print(m.get_transpose())
     
-    print "--"
+    print("--")
 
-    print m.get_row(2)
+    print(m.get_row(2))
 
     m.transpose()
-    print m
+    print(m)
     
-    print 
+    print() 
     
     #print (10, 20, 30) + Vector3(1,2,3)
     
     m.translate = (m.translate) + Vector3(10, 20, 30)
     
-    print m
+    print(m)
     
-    print 
+    print() 
     
     v = (1., 2., 3.)
-    print v
+    print(v)
     vt = m.transform(v)
-    print vt
+    print(vt)
     
     vit = m.get_inverse().transform(vt)
         
-    print vit
+    print(vit)
     
     
-    print m.inverse_transform(vt)
+    print(m.inverse_transform(vt))
     m[1,2]=3.    
 
-    print
+    print()
     
-    print m.x_axis
-    print m.translate
+    print(m.x_axis)
+    print(m.translate)
     m.translate = (1, 2, 3)
     
-    print m
+    print(m)
 
         
         

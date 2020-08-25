@@ -21,5 +21,5 @@ class PickupThing(MObject):
     def picked_up(self,player):
         '''Returns true if the item was picked up,
         false if not'''
-        print 'picked up'
+        print('picked up')
         return True
