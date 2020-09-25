@@ -54,8 +54,9 @@ def parseDoor(config,section_name):
 
 
 def load_walls():
-    config = configparser.ConfigParser()    
+    config = configparser.ConfigParser()
     config.read(wall_config)
+    print(config)
     walls = {}
     flats = {}
     doors = {}
@@ -83,7 +84,7 @@ def load_walls():
             if(f != None):
                 if(f.code not in doors):
                     doors[f.code] = f
-                    f.load_textures()                 
+                    f.load_textures()
                 else:
                     print('ERROR: %s already in config' %i)
 
