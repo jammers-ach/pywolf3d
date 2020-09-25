@@ -13,8 +13,6 @@ def parseWall(config,section_name):
         print("ERROR: %s isn't a valid wall code" % (section_name))
         return
 
-
-    #print code, config.items(section_name)
     d = config.get(section_name,'description')
     t1 = config.get(section_name,'texture1')
     t2 = config.get(section_name,'texture2')

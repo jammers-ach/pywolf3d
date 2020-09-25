@@ -19,15 +19,12 @@ get_sides = lambda x,y: [(x,y+1),(x,y-1),(x+1,y),(x-1,y)]
 class GameMap(object):
 
     def __init__(self,wall_layout,object_list):
-
-
         self.wall_layout = wall_layout
 
         self.w = len(wall_layout)
         self.h = len(wall_layout[1])
 
         self.cubes = {}
-
 
         self.display_list = None
         self.generate_cubes()
@@ -80,7 +77,6 @@ class GameMap(object):
 
     def handle_pickups(self,player):
         '''picks up any objects the player might be standing on'''
-        #print 'pickups'
         pos = (int(player.x),int(player.y))
         if(pos in self.pickups and self.pickups[pos] != []):
             for obj in self.pickups[pos]:
@@ -91,16 +87,13 @@ class GameMap(object):
 
     def generate_cubes(self):
         '''generates all the cubes'''
-        #Go throught he wall definitation and create cubes for all the no 0
+        #Go throught he wall definitation and create cubes for all the none 0
         for y in range(self.h):
             for x in range(self.w):
-
                 try:
                     wall_type = self.wall_layout[x][y]
                     if(wall_type != 0 ):
-
                         position = (float(x), 0.0, float(y))
-
                         if(wall_type >= rendering_opts['door_start_code']):
                             cube = Door( position, wall_type - rendering_opts['door_start_code'])
                             self.cubes[(x,y)] = cube
@@ -126,8 +119,6 @@ class GameMap(object):
                     self.cubes[(x,y)].rendered_normals = rendered_normals
 
 
-
-
     def _sort_objects(self,player):
         '''Sorts all the objects by distance to the player so they are rendered int he right order'''
         posx = player.x
@@ -149,9 +140,7 @@ class GameMap(object):
 
 
     def render(self):
-
         if self.display_list is None:
-
             # Create a display list
             self.display_list = glGenLists(1)
             glNewList(self.display_list, GL_COMPILE)
@@ -168,6 +157,5 @@ class GameMap(object):
             glEndList()
 
         else:
-
             # Render the display list
             glCallList(self.display_list)

@@ -5,15 +5,13 @@ http://www.pygame.org/wiki/SimpleOpenGL2dClasses?parent=CookBook
 
 @author: jammers
 '''
-
-
 from OpenGL.GL import *
 
 import os
 from game_options import rendering_opts
 import pygame
 
-#from PIL import Image 
+#from PIL import Image
 #import numpy
 
 darken = lambda x,f: int(x*f)
@@ -21,7 +19,6 @@ darken = lambda x,f: int(x*f)
 def darken_surf(surface):
     '''Darkens a surface'''
     #Todo this is really ineffcient
-    
     ix = surface.get_width()
     iy = surface.get_height()
     f = rendering_opts['darken_factor']
@@ -42,7 +39,7 @@ def make_transparent(surface):
                 a = 0
             surface.set_at((x,y),(r,b,g,a))
 
-    
+
 def load_translarent_texture(imageName):
     """Loads a texture but the pink colour is transparent"""
 
@@ -50,7 +47,7 @@ def load_translarent_texture(imageName):
     textureSurface = pygame.image.load(p)
     textureSurface = textureSurface.convert_alpha()
     make_transparent(textureSurface)
-    
+
     tw = textureSurface.get_width()
     th = textureSurface.get_height()
     imgstring = pygame.image.tostring(textureSurface, "RGBA", 1)
@@ -58,19 +55,19 @@ def load_translarent_texture(imageName):
     ID = glGenTextures(1)
     glBindTexture(GL_TEXTURE_2D, ID)
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tw, th, 0, GL_RGBA, GL_UNSIGNED_BYTE, imgstring)
-    return ID    
+    return ID
 
 def load_texture(imageName,darken=True):
     """Load an image file as a 2D texture using pygame,
     returns two textures, the normal one and the darker one"""
     p = os.path.join(rendering_opts['tex_dir'],imageName)
     textureSurface = pygame.image.load(p)
-    
+
     light_image = pygame.image.tostring(textureSurface, "RGBA", 1)
-    
+
     ix = textureSurface.get_width()
     iy = textureSurface.get_height()
-    
+
     ID = glGenTextures(1)
     glBindTexture(GL_TEXTURE_2D, ID)
     glPixelStorei(GL_UNPACK_ALIGNMENT,1)
@@ -78,7 +75,7 @@ def load_texture(imageName,darken=True):
             GL_TEXTURE_2D, 0, 3, ix, iy, 0,
             GL_RGBA, GL_UNSIGNED_BYTE, light_image
         )
-    
+
     ID2=None
     if(darken):
         darken_surf(textureSurface)
@@ -90,7 +87,7 @@ def load_texture(imageName,darken=True):
                 GL_TEXTURE_2D, 0, 3, ix, iy, 0,
                 GL_RGBA, GL_UNSIGNED_BYTE, dark_image
             )
-    
+
     print("TEXTURE: loaded %s" % p)
     return ID,ID2
 
