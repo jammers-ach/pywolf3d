@@ -1,22 +1,16 @@
-'''
-Created on 21 Aug 2014
-
-@author: jammers
-'''
-from gameobjects.vector3 import *
-from cube import Cube,Floor, Celing,Door
-import pygame
-from pygame.locals import *
-from player import Player
-from gameobjects.util import linear_distance
-from things import ImmovableThing,PickupThing
-from game_options import rendering_opts
-
-get_sides = lambda x,y: [(x,y+1),(x,y-1),(x+1,y),(x-1,y)]
+from pywolf3d.cube import Cube, Floor, Celing,Door
+from pywolf3d.player import Player
+from pywolf3d.things import ImmovableThing, PickupThing
+from pywolf3d.game_options import rendering_opts
 
 class GameMap(object):
+    '''A single game level'''
 
-    def __init__(self,wall_layout,object_list):
+    def __init__(self, wall_layout, object_list):
+        '''
+        :param wall_layout: array of codes for the level
+        :param object_list: list of things in the level
+        '''
         self.wall_layout = wall_layout
 
         self.w = len(wall_layout)
@@ -24,7 +18,7 @@ class GameMap(object):
 
         self.cubes = {}
 
-        self.generate_cubes()
+        self._generate_cubes()
         self.players = []
 
         #For now just 1 floor
@@ -34,20 +28,19 @@ class GameMap(object):
         self.object_list = object_list
         self._make_object_lists()
 
-
     def _make_object_lists(self):
         self.immovable_objs = {}
         self.pickups = {}
 
         for obj in self.object_list:
             if(isinstance(obj,ImmovableThing)):
-                self.immovable_objs[(obj.x,obj.y)] = [obj]
+                self.immovable_objs[(obj.x, obj.y)] = [obj]
             if(isinstance(obj,PickupThing)):
-                self.pickups[(obj.x,obj.y)] = [obj]
+                self.pickups[(obj.x, obj.y)] = [obj]
 
 
-
-    def add_player(self,start_x,start_y):
+    def add_player(self, start_x, start_y):
+        '''add the player object at start_x, start_y'''
         p = Player(self,start_x,start_y)
         self.players.append(p)
         return p
@@ -61,7 +54,7 @@ class GameMap(object):
         try:
             if(self.wall_layout[int(x)][int(y)] != 0):
                 return False
-        except IndexError as e:
+        except IndexError:
             return False
 
         #Now look through the objects
@@ -81,21 +74,17 @@ class GameMap(object):
                     self.object_list.remove(obj)
                     del obj
 
-    def generate_cubes(self):
-        '''generates all the cubes'''
-        #Go throught he wall definitation and create cubes for all the none 0
+    def _generate_cubes(self):
+        # generate all the cube objects for each
+        # cell of the game
         for y in range(self.h):
             for x in range(self.w):
-                try:
-                    wall_type = self.wall_layout[x][y]
-                    if(wall_type != 0 ):
-                        position = (float(x), 0.0, float(y))
-                        if(wall_type >= rendering_opts['door_start_code']):
-                            cube = Door( position, wall_type - rendering_opts['door_start_code'])
-                            self.cubes[(x,y)] = cube
-                        else:
-                            cube = Cube( position, wall_type )
-                            self.cubes[(x,y)] = cube
-                except IndexError as e:
-                    #TODO log me nicely
-                    pass
+                wall_type = self.wall_layout[x][y]
+                if(wall_type != 0 ):
+                    position = (float(x), 0.0, float(y))
+                    if(wall_type >= rendering_opts['door_start_code']):
+                        cube = Door( position, wall_type - rendering_opts['door_start_code'])
+                        self.cubes[(x,y)] = cube
+                    else:
+                        cube = Cube( position, wall_type )
+                        self.cubes[(x,y)] = cube
