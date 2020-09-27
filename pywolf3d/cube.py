@@ -3,7 +3,7 @@ Created on 21 Aug 2014
 
 @author: jammers
 '''
-from gameobjects.vector3 import *
+from pywolf3d.math import Vector3
 from OpenGL.GL import *
 from OpenGL.GLU import *
 import pygame

@@ -1,5 +1,5 @@
 from math import sqrt
-from pywolf3d.gameobjects.util import format_number
+from pywolf3d.math.util import format_number
 
 class Vector3(object):
     __slots__ = ('_v')
@@ -49,6 +49,9 @@ class Vector3(object):
         v._v = [bx-ax, by-ay, bz-az]
 
         return v
+
+    def __copy__(self):
+        return type(self)((self._v))
 
     @classmethod
     def from_floats(cls, *args):

@@ -1,7 +1,7 @@
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
-from pywolf3d.gameobjects.util import linear_distance
+from pywolf3d.math.util import linear_distance
 
 
 class GLGameMapRender(object):

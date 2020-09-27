@@ -2,7 +2,7 @@
 from textures import load_translarent_texture,bind_texture
 import os
 from game_options import rendering_opts
-from gameobjects.vector3 import *
+from pywolf3d.math import Vector3
 from OpenGL.GL import *
 from OpenGL.GLU import *
 import math
@@ -33,7 +33,7 @@ def load_sprites():
 
 
 def remap_to_camera(camera_vector,verticies,pos):
-    '''takes coordinates of 4 verticies, and the camera y angle and 
+    '''takes coordinates of 4 verticies, and the camera y angle and
     rotates the coordinates to face the camera'''
     #rotate
     i,j,k = camera_vector
@@ -45,7 +45,7 @@ def remap_to_camera(camera_vector,verticies,pos):
 
     return v
 
-class MObject(object): 
+class MObject(object):
     '''A map object'''
 
     def __init__(self,x,y,obj_type):
@@ -57,7 +57,7 @@ class MObject(object):
 
         self.obj_type = obj_type
         self.sprite = sprite_mapping[obj_type]
-      
+
         #These aren't the verticies of the object, but the verticies of the coords
         #relative to a centre about which we rotate
         self.vertices = ((-0.5,0,0),(0.5,0,0),(0.5,1,0),(-0.5,1,0))
@@ -66,17 +66,17 @@ class MObject(object):
                  (sprite_height, 0.0),
                  (sprite_height, sprite_width),
                  (0.0, sprite_width), ]
-    
+
     def render(self,camera_vector):
         '''In wolf3d sprites always faced the player
         we can't do that nicely here, so we have to render
         a texture that always faces the camera
-        
+
         this will render the object so that it faces the camera coordinates'''
 
         bind_texture(self.sprite['texture'])
         glBegin(GL_QUADS)
-        
+
         glNormal3dv( (0.0, +1.0, 0.0) )
         vertices = remap_to_camera(camera_vector,self.vertices,(self.x,self.y))
         v1, v2, v3, v4 = vertices
@@ -87,7 +87,7 @@ class MObject(object):
         glTexCoord2fv(self.t_index[2])
         glVertex( v3 )
         glTexCoord2fv(self.t_index[3])
-        glVertex( v4 ) 
+        glVertex( v4 )
         glEnd()
 
 

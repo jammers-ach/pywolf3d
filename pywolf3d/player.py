@@ -3,8 +3,8 @@ Created on 22 Aug 2014
 
 @author: jammers
 '''
-from gameobjects.matrix44 import Matrix44
-from gameobjects.vector3 import Vector3
+from pywolf3d.math import Matrix44, Vector3
+from pywolf3d.math import Vector3
 
 import pygame
 from pygame.locals import *

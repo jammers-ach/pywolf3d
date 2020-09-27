@@ -9,8 +9,8 @@ from OpenGL.GLU import *
 import pygame
 from pygame.locals import *
 
-from gameobjects.matrix44 import *
-from gameobjects.vector3 import *
+from pywolf3d.math import Matrix44
+from pywolf3d.math import Vector3
 from cube import Cube
 from map import GameMap
 #from sprite import MObject
