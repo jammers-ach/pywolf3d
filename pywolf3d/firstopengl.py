@@ -16,6 +16,8 @@ from map import GameMap
 #from sprite import MObject
 from things import ImmovableThing, PassableThing, PickupThing
 
+from pywolf3d.render.glmaprender import  GLGameMapRender
+
 
 def resize(width, height):
 
@@ -88,6 +90,8 @@ def run():
     game_map = GameMap(test_map,object_list)
     player = game_map.add_player(2, 3)
 
+    maprender = GLGameMapRender(game_map)
+
 
     while True:
 
@@ -118,8 +122,8 @@ def run():
         glLight(GL_LIGHT0, GL_POSITION,  (0, 1.5, 1, 0))
 
         # Render the map
-        game_map.render()
-        game_map.objects_render(player)
+        maprender.render()
+        maprender.objects_render(player)
 
         # Show the screen
         pygame.display.flip()
