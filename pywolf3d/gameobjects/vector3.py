@@ -1,17 +1,12 @@
-from math import *
-from .util import format_number
-
-
+from math import sqrt
+from pywolf3d.gameobjects.util import format_number
 
 class Vector3(object):
-
     __slots__ = ('_v')
-
 
     def __init__(self, *args):
         """Creates a Vector3 from 3 numeric values or a list-like object
         containing at least 3 values. No arguments result in a null vector.
-
         """
         if len(args) == 3:
             self._v = list(map(float, args[:3]))
@@ -74,16 +69,6 @@ class Vector3(object):
         v = cls.__new__(cls, object)
         v._v = [ float(next(it)), float(next(it)), float(next(it)) ]
         return v
-
-    def copy():
-        """Returns a copy of this vector."""
-
-        v = cls.__new__(sel.__class__, object)
-        v._v = self._v[:]
-        return v
-        #return self.from_floats(self._v[0], self._v[1], self._v[2])
-
-    __copy__ = copy
 
     def _get_x(self):
         return self._v[0]
@@ -338,7 +323,7 @@ class Vector3(object):
         return tuple(self._v)
 
 
-    def scale(self, scale):
+    def scale(self, rhs):
         """Scales the vector by onther vector or a scalar. Same as the
         *= operator.
 
@@ -375,7 +360,7 @@ class Vector3(object):
         """
         try:
             x, y, z = self._v
-            l = length / sqrt(x*x + y*y + z*z)
+            l = new_length / sqrt(x*x + y*y + z*z)
         except ZeroDivisionError:
             self.v[:] = [0., 0., 0.]
             return self
@@ -466,14 +451,17 @@ class Vector3(object):
 
 
 
-def distance3d_squared(p1, p2):
-    return (p2[0]-p1[0])**2 + (p2[1]-p1[1])**2 + (p2[2]-p1[2])**2
+    @classmethod
+    def distance3d_squared(cls, p1, p2):
+        '''returns the squared distance between two points'''
+        return (p2[0]-p1[0])**2 + (p2[1]-p1[1])**2 + (p2[2]-p1[2])**2
 
+    @classmethod
+    def distance3d(cls, p1, p2):
+        return sqrt(cls.distance3d_squared(p1,p2))
 
-def distance3d(p1, p2):
-    return sqrt( (p2[0]-p1[0])**2 + (p2[1]-p1[1])**2 + (p2[2]-p1[2])**2 )
-
-def centre_point3d(points):
-    return sum( Vector3(p) for p in points ) / len(points)
+    @classmethod
+    def centre_point3d(cls, points):
+        return sum( cls(p) for p in points ) / len(points)
 
 
