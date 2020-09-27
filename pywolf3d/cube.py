@@ -1,22 +1,11 @@
-'''
-Created on 21 Aug 2014
-
-@author: jammers
-'''
 from pywolf3d.math import Vector3
 from OpenGL.GL import *
 from OpenGL.GLU import *
 import pygame
-from pygame.locals import *
 
-from os import listdir
-from os.path import isfile, join
-
-from textures import bind_texture
-from game_options import rendering_opts
-
-from wall_loader import load_walls
-
+from pywolf3d.textures import bind_texture
+from pywolf3d.game_options import rendering_opts
+from pywolf3d.wall_loader import load_walls
 
 #if we're rendering colours
 default_colour = (1,1,1,1)
@@ -45,8 +34,7 @@ def load_textures():
 
 
 class Cube(object):
-
-    def __init__(self, position, wall_type,rendered_normals=[0,1,2,3]):
+    def __init__(self, position, wall_type, rendered_normals=[0,1,2,3]):
         self.position = position
         self.wall_type_code = wall_type
         self.rendered_normals = rendered_normals
@@ -330,7 +318,6 @@ class FlatSurface(object):
         glEnd()
 
     def render_color(self):
-
         gl_col = default_colour
         glColor( gl_col )
         glBegin(GL_QUADS)
