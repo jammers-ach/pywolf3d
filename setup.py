@@ -8,6 +8,6 @@ setup(name='pywolf3d',
       author_email='jammers@gmail.com',
       url='https://github.com/jammers-ach/pywolf3d',
       packages=['pywolf3d',],
-      install_requires=['pygame', 'pyopengl'],
+      install_requires=['ursina', ],
       dependency_links=[]
      )
