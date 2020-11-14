@@ -26,6 +26,9 @@ class LevelLoader():
              [1,0,0,0,0,0,1],
              [1,1,1,1,1,1,1]]
 
+    def __init__(self, levelfile):
+        pass
+
     @property
     def w(self):
         return len(self.level)
@@ -40,11 +43,11 @@ class LevelLoader():
             assert h == self.h, f"row {z} is wrong length {self.h} {h}"
             for x, val in enumerate(row):
                 if val:
-                    cube = Cube(position=(x,0,z))
+                    cube = Cube(position=(x,1,z))
 
 
         for x in range(self.w+2):
             for z in range(self.h+2):
-                cube2 = Cube(position=(x-1,-1,z-1))
+                cube2 = Cube(position=(x-1,0,z-1))
 
 
