@@ -35,7 +35,7 @@ def start_game(level_path):
     app = Ursina()
     level = LevelLoader(level_path)
     level.load()
-    player = Wolf3dPlayer()
+    player = Wolf3dPlayer(position=level.player_start)
     app.run()
 
 
