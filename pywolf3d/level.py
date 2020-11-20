@@ -1,19 +1,22 @@
 import json
 import logging
 
-from ursina import Entity, scene, color, random
+from ursina import Entity, scene, color, random, Grid, Plane
+from ursina.models.procedural.cube import Cube as ProcCube
 
+from wall_runner import LevelOptimiser
 
 logger = logging.getLogger(__name__)
 
 class Cube(Entity):
     def __init__(self, code,  position=(0,0,0)):
+        model = ProcCube()
         green = code / 256
         red = 1 - green
         super().__init__(
             parent = scene,
             position = position,
-            model = 'cube',
+            model = model,
             origin_y = .5,
             texture = 'white_cube',
             color = color.color(green, red, random.uniform(.9, 1.0)),
@@ -24,24 +27,23 @@ class Cube(Entity):
 
 
 
-
 class LevelLoader():
-    level = [[0,0,0,0,0,0,1],
-             [1,0,0,0,0,0,1],
-             [1,0,0,0,0,0,1],
-             [1,0,0,0,0,0,1],
-             [1,0,0,0,0,0,1],
-             [1,0,0,0,0,0,1],
-             [1,0,0,0,0,0,1],
-             [1,0,0,0,0,0,1],
-             [1,1,1,1,1,1,1]]
+    level = [[33,107,107,107,107,107,33],
+             [33,107,107,107,107,107,33],
+             [33,107,107,107,107,107,33],
+             [33,107,107,107,107,107,33],
+             [33,107,107,107,107,107,33],
+             [33,107,107,107,107,107,33],
+             [33,107,107,107,107,107,33],
+             [33,107,107,107,107,107,33],
+             [33,33,33,33,33,33,33]]
+    start = (0,5,0)
 
     # https://devinsmith.net/backups/xwolf/tiles.html
-    # all valid values for walls
+    # all valid values for walls, floors an doors
     wall_lists = range(0,63+1)
     floor_lists = range(106,143+1)
     door_lists = range(90, 101+1)
-    start = (1,5,1)
 
     def __init__(self, levelfile=None):
         if levelfile:
@@ -49,32 +51,11 @@ class LevelLoader():
                 data = json.load(f)
             self.level = data['level']
 
-            self._cull_walls()
-
             for coord, code in data['object_list']:
                 if code in [19, 20, 21, 22]:
                     self.start = (coord[1], 5, coord[0])
 
 
-    def _cull_walls(self):
-        '''takes in a level, culls all interal cubes
-        cuts the number of cubes in a level to a minimum
-
-        replaces the code for each wall with an -1 - internal wall code'''
-        cull_list = []
-        for i in range(self.w):
-            for j in range(self.h):
-                if self.level[i][j] in self.floor_lists:
-                    continue
-                if self.level[i][j] in self.wall_lists and \
-                        (i == 0 or self.level[i-1][j] in self.wall_lists) and \
-                        (i == self.w-1 or self.level[i+1][j] in self.wall_lists) and \
-                        (j == 0 or self.level[i][j-1] in self.wall_lists) and \
-                        (j == self.h-1 or self.level[i][j+1] in self.wall_lists):
-                    cull_list.append((i,j))
-
-        for i,j in cull_list:
-            self.level[i][j] = -1
 
     @property
     def w(self):
@@ -90,7 +71,23 @@ class LevelLoader():
 
     def load(self):
         logger.info("rendering cubes from map")
-        for z, row in enumerate(self.level):
+        lo = LevelOptimiser(self.level,
+                            self.wall_lists,
+                            self.floor_lists,
+                            self.door_lists)
+        level = lo.optimise()
+        total_cubes = 0
+
+
+        Entity(model=Grid(self.w,self.h),
+               position=(int(self.w/2), 0, int(self.h/2)),
+               scale=max(self.w, self.h),
+               color=color.color(0,0,0),
+               collision=True,
+               collider='box',
+               rotation_x=90)
+
+        for z, row in enumerate(level):
             h = len(row)
             assert h == self.h, f"row {z} is wrong length {self.h} {h}"
             for x, val in enumerate(row):
@@ -99,11 +96,12 @@ class LevelLoader():
 
                 if val not in self.floor_lists \
                         and val not in self.door_lists:
-                    cube = Cube(val, position=(x,1,z))
-                else:
-                    cube = Cube(255, position=(x,0,z))
+                    Cube(val, position=(x,1,z))
+                    total_cubes +=1
 
 
                 if val not in self.wall_lists and \
                         val not in self.floor_lists:
                     print(f"square {val} not in valid floor or wall lists")
+        print(f"made {total_cubes} walls")
+
