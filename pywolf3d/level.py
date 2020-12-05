@@ -1,8 +1,7 @@
 import json
 import logging
 
-from ursina import Entity, scene, color, random, Grid, Plane
-from ursina.models.procedural.cube import Cube as ProcCube
+from ursina import Entity, scene, color, random, Grid, Plane, load_texture
 
 from wall_runner import LevelOptimiser
 
@@ -10,17 +9,16 @@ logger = logging.getLogger(__name__)
 
 class Cube(Entity):
     def __init__(self, code,  position=(0,0,0)):
-        model = ProcCube()
-        green = code / 256
-        red = 1 - green
+        wall_code = code*2
+        fname = f'wall{wall_code:04d}'
+        txt = load_texture(fname, path="wolfdata/extracted/")
         super().__init__(
             parent = scene,
             position = position,
-            model = model,
+            model = 'cube',
             origin_y = .5,
-            texture = 'white_cube',
-            color = color.color(green, red, random.uniform(.9, 1.0)),
-            highlight_color = color.lime,
+            texture = txt,
+            color = color.white,
             collision=True,
             collider='box'
         )
