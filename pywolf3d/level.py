@@ -8,10 +8,8 @@ from wall_runner import LevelOptimiser
 logger = logging.getLogger(__name__)
 
 class Cube(Entity):
-    def __init__(self, code,  position=(0,0,0)):
-        wall_code = code*2
-        fname = f'wall{wall_code:04d}'
-        txt = load_texture(fname, path="wolfdata/extracted/")
+    def __init__(self, texture_file,  position=(0,0,0)):
+        txt = load_texture(texture_file, path="wolfdata/extracted/")
         super().__init__(
             parent = scene,
             position = position,
@@ -54,6 +52,11 @@ class LevelLoader():
                     self.start = (coord[1], 5, coord[0])
 
 
+    def wall_file_name(self, val):
+        '''returns the filename for a wall code'''
+        wall_code = (val-1)*2
+        fname = f'wall{wall_code:04d}'
+        return fname
 
     @property
     def w(self):
@@ -94,7 +97,8 @@ class LevelLoader():
 
                 if val not in self.floor_lists \
                         and val not in self.door_lists:
-                    Cube(val, position=(x,1,z))
+
+                    Cube(self.wall_file_name(val), position=(x,1,z))
                     total_cubes +=1
 
 
