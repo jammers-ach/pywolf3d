@@ -18,16 +18,16 @@ class Wall(Entity):
         z_off = 0
         z_rot = 0
 
-        if facing == 'n':
+        if facing == 'w':
             z_off = -0.5
-        elif facing == 's':
+        elif facing == 'e':
             z_off = 0.5
             z_rot = 180
 
-        elif facing == 'e':
+        elif facing == 'n':
             x_off = 0.5
             z_rot = 90
-        elif facing == 'w':
+        elif facing == 's':
             x_off = -0.5
             z_rot = -90
 
@@ -45,16 +45,16 @@ class Wall(Entity):
 
 
 class LevelLoader():
-    level = [[33,107,107,107,107,107,33],
+    level = [[33,33,33,33,33,33,33],
              [33,107,107,107,107,107,33],
-             [33,107,107,107,107,107,33],
+             [33,33,107,107,107,33,33],
              [33,107,107,107,107,107,33],
              [33,107,107, 33,107,107,33],
              [33,107,107,107,107,107,33],
              [33,107,107,107,107,107,33],
              [33,107,107,107,107,107,33],
              [33,33,33,33,33,33,33]]
-    start = (0,5,0)
+    start = (1,5,1)
 
     # https://devinsmith.net/backups/xwolf/tiles.html
     # all valid values for walls, floors an doors
@@ -73,9 +73,11 @@ class LevelLoader():
                     self.start = (coord[1], 5, coord[0])
 
 
-    def wall_file_name(self, val):
+    def wall_file_name(self, val, northsouth=False):
         '''returns the filename for a wall code'''
         wall_code = (val-1)*2
+        if northsouth:
+            wall_code += 1
         fname = f'wall{wall_code:04d}'
         return fname
 
@@ -118,19 +120,11 @@ class LevelLoader():
 
                 if val not in self.floor_lists \
                         and val not in self.door_lists:
-
-                    Wall(self.wall_file_name(val), position=(x,0,z),
-                         facing='n')
-                    Wall(self.wall_file_name(val), position=(x,0,z),
-                         facing='e')
-                    Wall(self.wall_file_name(val), position=(x,0,z),
-                         facing='s')
-                    Wall(self.wall_file_name(val), position=(x,0,z),
-                         facing='w')
+                    for face in lo.external_walls(z,x):
+                        Wall(self.wall_file_name(val, northsouth=face=='n' or face =='s'), position=(x,0,z),
+                            facing=face, )
+                        total_cubes += 1
 
 
-                if val not in self.wall_lists and \
-                        val not in self.floor_lists:
-                    print(f"square {val} not in valid floor or wall lists")
         print(f"made {total_cubes} walls")
 

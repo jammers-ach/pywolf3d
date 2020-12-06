@@ -57,7 +57,6 @@ class Wolf3dPlayer(Entity):
 
         if self.gravity:
             # # gravity
-            print(self.position)
             offset = (0,2,0)
             ray = boxcast(self.world_position + offset, self.down, ignore=(self,), thickness=.9)
 
