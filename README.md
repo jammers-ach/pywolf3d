@@ -1,4 +1,4 @@
 pywolf3d
 ========
 
-Python wolfenstien 3d type engine using opengl and pygame
+Python wolfenstien 3d type engine using ursina
