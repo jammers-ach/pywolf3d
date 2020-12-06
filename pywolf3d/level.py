@@ -7,20 +7,41 @@ from wall_runner import LevelOptimiser
 
 logger = logging.getLogger(__name__)
 
-class Cube(Entity):
-    def __init__(self, texture_file,  position=(0,0,0)):
+
+class Wall(Entity):
+    def __init__(self, texture_file, position=(0,0,0),
+                 facing='n'):
         txt = load_texture(texture_file, path="wolfdata/extracted/")
+        x,y,z = position
+
+        x_off = 0
+        z_off = 0
+        z_rot = 0
+
+        if facing == 'n':
+            z_off = -0.5
+        elif facing == 's':
+            z_off = 0.5
+            z_rot = 180
+
+        elif facing == 'e':
+            x_off = 0.5
+            z_rot = 90
+        elif facing == 'w':
+            x_off = -0.5
+            z_rot = -90
+
         super().__init__(
             parent = scene,
-            position = position,
-            model = 'cube',
-            origin_y = .5,
+            position = (x + x_off, y+0.5, z + z_off),
+            model = Plane((1,1)),
             texture = txt,
             color = color.white,
             collision=True,
-            collider='box'
+            collider='box',
+            rotation_x=-90,
+            rotation_z=z_rot,
         )
-
 
 
 class LevelLoader():
@@ -28,7 +49,7 @@ class LevelLoader():
              [33,107,107,107,107,107,33],
              [33,107,107,107,107,107,33],
              [33,107,107,107,107,107,33],
-             [33,107,107,107,107,107,33],
+             [33,107,107, 33,107,107,33],
              [33,107,107,107,107,107,33],
              [33,107,107,107,107,107,33],
              [33,107,107,107,107,107,33],
@@ -98,8 +119,14 @@ class LevelLoader():
                 if val not in self.floor_lists \
                         and val not in self.door_lists:
 
-                    Cube(self.wall_file_name(val), position=(x,1,z))
-                    total_cubes +=1
+                    Wall(self.wall_file_name(val), position=(x,0,z),
+                         facing='n')
+                    Wall(self.wall_file_name(val), position=(x,0,z),
+                         facing='e')
+                    Wall(self.wall_file_name(val), position=(x,0,z),
+                         facing='s')
+                    Wall(self.wall_file_name(val), position=(x,0,z),
+                         facing='w')
 
 
                 if val not in self.wall_lists and \
