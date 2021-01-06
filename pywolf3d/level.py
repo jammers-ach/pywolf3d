@@ -219,8 +219,7 @@ class LevelLoader():
                 if val in self.door_lists:
                     face = "ew" if val %2 else "ns"
                     Door(self.door_file_name(val), position=(x,0,z),
-                         facing=face,
-                         parent=walls)
+                         facing=face)
 
                 if val in self.wall_lists:
                     for face in lo.external_walls(z,x):
