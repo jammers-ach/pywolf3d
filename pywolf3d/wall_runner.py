@@ -8,9 +8,9 @@ class LevelOptimiser():
         self.floor_lists = floor_lists
         self.door_lists = door_lists
 
-    def optimise(self):
-        self._cull_walls()
+        self.solid_lists = list(self.wall_lists) + list(self.door_lists)
 
+    def optimise(self):
         return self.level
 
     @property
@@ -20,6 +20,39 @@ class LevelOptimiser():
     @property
     def h(self):
         return len(self.level[0])
+
+
+    def external_walls(self, x, y):
+        '''returns a list of external walls that this square has
+        e.g. fff
+             wwf
+             wff
+
+        external_walls(0,0) will return [] (it's a floor)
+        external_walls(0,1) will return ['n'] (the only external wall is north)
+        external_walls(1,1) will reutrn ['n','e','s'] it's west wall is closed
+        '''
+
+        if x < 0 or x > self.w:
+            return []
+        if y < 0 or y > self.h:
+            return []
+        if self.level[x][y] in self.floor_lists:
+            return []
+
+
+        faces = []
+        if (x > 0 and self.level[x-1][y] not in self.solid_lists):
+            faces.append('w')
+        if (x < self.w-1 and self.level[x+1][y] not in self.solid_lists):
+            faces.append('e')
+
+        if (y > 0 and self.level[x][y-1] not in self.solid_lists):
+            faces.append('s')
+        if (y < self.h-1 and self.level[x][y+1] not in self.solid_lists):
+            faces.append('n')
+
+        return faces
 
     def _cull_walls(self):
         '''takes in a level, culls all interal cubes
@@ -40,5 +73,6 @@ class LevelOptimiser():
 
         for i,j in cull_list:
             self.level[i][j] = -1
+
 if __name__ == '__main__':
     pass
