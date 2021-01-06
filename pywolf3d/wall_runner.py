@@ -8,6 +8,8 @@ class LevelOptimiser():
         self.floor_lists = floor_lists
         self.door_lists = door_lists
 
+        self.solid_lists = list(self.wall_lists) + list(self.door_lists)
+
     def optimise(self):
         return self.level
 
@@ -18,6 +20,7 @@ class LevelOptimiser():
     @property
     def h(self):
         return len(self.level[0])
+
 
     def external_walls(self, x, y):
         '''returns a list of external walls that this square has
@@ -39,17 +42,16 @@ class LevelOptimiser():
 
 
         faces = []
-        if (x > 0 and self.level[x-1][y] not in self.wall_lists):
+        if (x > 0 and self.level[x-1][y] not in self.solid_lists):
             faces.append('w')
-        if (x < self.w-1 and self.level[x+1][y] not in self.wall_lists):
+        if (x < self.w-1 and self.level[x+1][y] not in self.solid_lists):
             faces.append('e')
 
-        if (y > 0 and self.level[x][y-1] not in self.wall_lists):
+        if (y > 0 and self.level[x][y-1] not in self.solid_lists):
             faces.append('s')
-        if (y < self.h-1 and self.level[x][y+1] not in self.wall_lists):
+        if (y < self.h-1 and self.level[x][y+1] not in self.solid_lists):
             faces.append('n')
 
-        print(x, y, faces)
         return faces
 
     def _cull_walls(self):
@@ -71,5 +73,6 @@ class LevelOptimiser():
 
         for i,j in cull_list:
             self.level[i][j] = -1
+
 if __name__ == '__main__':
     pass

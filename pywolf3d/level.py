@@ -44,6 +44,77 @@ class Wall(Entity):
         )
 
 
+class Door(Entity):
+    def __init__(self,texture_file, parent=scene, position=(0,0,0),
+                 facing='ns'):
+        txt = load_texture(texture_file, path="wolfdata/extracted/")
+        sidetxt = load_texture("wall0100", path="wolfdata/extracted/")
+        x,y,z = position
+
+        z_off = 0
+        x_off = 0
+        z_rot = 0
+
+        if facing == 'ns':
+            z_rot = 90
+            z_off = 0.5
+        elif facing == 'ew':
+            z_rot = 180
+            x_off = -0.5
+        else:
+            raise Exception(f"direction {facing} is not valid for a door")
+
+        super().__init__(
+        )
+
+        self.door1 = Entity(
+            parent=self,
+            position = (x, y+0.5, z),
+            model = Plane((1,1)),
+            texture = txt,
+            color = color.white,
+            collision=True,
+            collider='box',
+            rotation_x=-90,
+            rotation_z=z_rot,
+        )
+        self.door2 = Entity(
+            parent=self,
+            position = (x, y+0.5, z),
+            model = Plane((1,1)),
+            texture = txt,
+            color = color.white,
+            collision=True,
+            collider='box',
+            rotation_x=-90,
+            rotation_z=z_rot - 180,
+        )
+
+        self.door_side1 = Entity(
+            parent=self,
+            position = (x+x_off, y+0.5, z+z_off),
+            model = Plane((1,1)),
+            texture = sidetxt,
+            color = color.white,
+            collision=False,
+            collider='box',
+            rotation_x=-90,
+            rotation_z=z_rot - 90,
+        )
+
+        self.door_side2 = Entity(
+            parent=self,
+            position = (x-x_off, y+0.5, z-z_off),
+            model = Plane((1,1)),
+            texture = sidetxt,
+            color = color.white,
+            collision=False,
+            collider='box',
+            rotation_x=-90,
+            rotation_z=z_rot + 90,
+        )
+
+
 class LevelLoader():
     level = [[33,33,33,33,33,33,33],
              [33,107,107,107,107,107,33],
@@ -80,6 +151,10 @@ class LevelLoader():
             wall_code += 1
         fname = f'wall{wall_code:04d}'
         return fname
+
+    def door_file_name(self, val, northsouth=False):
+        '''returns the filename for a door code'''
+        return 'wall0098'
 
     @property
     def w(self):
@@ -118,8 +193,15 @@ class LevelLoader():
                 if val == -1:
                     continue
 
-                if val not in self.floor_lists \
-                        and val not in self.door_lists:
+                if val in self.floor_lists:
+                    continue
+                if val in self.door_lists:
+                    face = "ew" if val %2 else "ns"
+                    Door(self.door_file_name(val), position=(x,0,z),
+                         facing=face,
+                         parent=walls)
+
+                if val in self.wall_lists:
                     for face in lo.external_walls(z,x):
                         Wall(self.wall_file_name(val, northsouth=face=='n' or face =='s'), position=(x,0,z),
                             facing=face, )
