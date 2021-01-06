@@ -1,7 +1,7 @@
 import json
 import logging
 
-from ursina import Entity, scene, color, random, Grid, Plane, load_texture
+from ursina import Entity, scene, color, random, Grid, Plane, load_texture, curve
 
 from wall_runner import LevelOptimiser
 
@@ -41,10 +41,13 @@ class Wall(Entity):
             collider='box',
             rotation_x=-90,
             rotation_z=z_rot,
+            add_to_scene_entities=False,
         )
 
 
 class Door(Entity):
+    duration = 2
+
     def __init__(self,texture_file, parent=scene, position=(0,0,0),
                  facing='ns'):
         txt = load_texture(texture_file, path="wolfdata/extracted/")
@@ -55,6 +58,8 @@ class Door(Entity):
         x_off = 0
         z_rot = 0
 
+        self.facing = facing
+        assert facing in ['ns', 'ew']
         if facing == 'ns':
             z_rot = 90
             z_off = 0.5
@@ -66,6 +71,10 @@ class Door(Entity):
 
         super().__init__(
         )
+
+        self.door_x = x
+        self.door_y = y+0.5
+        self.door_z = z
 
         self.door1 = Entity(
             parent=self,
@@ -114,6 +123,18 @@ class Door(Entity):
             rotation_z=z_rot + 90,
         )
 
+    def open(self):
+        dz = -1 if self.facing == 'ns' else 0
+        dx = -1 if self.facing == 'ew' else 0
+        target = (self.door_x + dx, self.door_y, self.door_z + dz)
+        self.door1.animate_position(target, self.duration, curve=curve.linear)
+        self.door2.animate_position(target, self.duration, curve=curve.linear)
+
+    def close(self):
+        print("Closing door")
+        target = (self.door_x, self.door_y, self.door_z)
+        self.door1.animate_position(target, self.duration, curve=curve.linear)
+        self.door2.animate_position(target, self.duration, curve=curve.linear)
 
 class LevelLoader():
     level = [[33,33,33,33,33,33,33],

@@ -77,8 +77,9 @@ class Wolf3dPlayer(Entity):
 
 
     def input(self, key):
-        if key == 'space':
-            self.jump()
+        if key == 'space' and mouse.hovered_entity \
+                and hasattr(mouse.hovered_entity.parent, 'open'):
+            mouse.hovered_entity.parent.open()
 
 
     def jump(self):
