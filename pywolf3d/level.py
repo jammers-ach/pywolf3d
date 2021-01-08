@@ -1,7 +1,7 @@
 import json
 import logging
 
-from ursina import Entity, scene, color, random, Grid, Plane, load_texture, curve
+from ursina import Entity, scene, color, random, Grid, Plane, load_texture, curve, invoke
 
 from wall_runner import LevelOptimiser
 
@@ -47,6 +47,7 @@ class Wall(Entity):
 
 class Door(Entity):
     duration = 2
+    hold_open = 5
 
     def __init__(self,texture_file, parent=scene, position=(0,0,0),
                  facing='ns'):
@@ -129,6 +130,10 @@ class Door(Entity):
         target = (self.door_x + dx, self.door_y, self.door_z + dz)
         self.door1.animate_position(target, self.duration, curve=curve.linear)
         self.door2.animate_position(target, self.duration, curve=curve.linear)
+
+        def close():
+            self.close()
+        invoke(close, delay=self.duration + self.hold_open)
 
     def close(self):
         print("Closing door")
