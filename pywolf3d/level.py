@@ -39,7 +39,7 @@ class Wall(Entity):
             texture = txt,
             color = color.white,
             collision=True,
-            collider='box',
+            collider='mesh',
             rotation_x=-90,
             rotation_z=z_rot,
             add_to_scene_entities=False,
@@ -249,12 +249,14 @@ class LevelLoader():
 
         total_objects = 0
 
+        self.sprites = []
+
         for coord, code in self.object_list:
             # see WL_GAME.C and WL_ACT1.C for details on ojbects
             if code in range(23, 74+1):
                 txt = SolidSprite.texture_filename(code)
-                x, z = coord
-                SolidSprite(txt, position=(x,0,z))
+                y, x = coord
+                self.sprites.append(SolidSprite(txt, position=(x,0,y)))
                 total_objects += 1
 
         print(f"make {total_objects} objects")

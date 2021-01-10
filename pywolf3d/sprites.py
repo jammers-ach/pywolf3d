@@ -27,6 +27,10 @@ class Sprite(Entity):
         fname = f'sprite{sprite_code:04d}'
         return fname
 
+    def face(self, target):
+        ''' rotates this sprite so it faces target'''
+        self.rotation_y = target.rotation_y
+
 
 class SolidSprite(Sprite):
     pass
