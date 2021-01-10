@@ -1,9 +1,10 @@
 import json
 import logging
 
-from ursina import Entity, scene, color, random, Grid, Plane, load_texture, curve
+from ursina import Entity, scene, color, random, Grid, Plane, load_texture, curve, invoke
 
 from wall_runner import LevelOptimiser
+from sprites import SolidSprite
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +39,7 @@ class Wall(Entity):
             texture = txt,
             color = color.white,
             collision=True,
-            collider='box',
+            collider='mesh',
             rotation_x=-90,
             rotation_z=z_rot,
             add_to_scene_entities=False,
@@ -47,6 +48,7 @@ class Wall(Entity):
 
 class Door(Entity):
     duration = 2
+    hold_open = 5
 
     def __init__(self,texture_file, parent=scene, position=(0,0,0),
                  facing='ns'):
@@ -130,6 +132,10 @@ class Door(Entity):
         self.door1.animate_position(target, self.duration, curve=curve.linear)
         self.door2.animate_position(target, self.duration, curve=curve.linear)
 
+        def close():
+            self.close()
+        invoke(close, delay=self.duration + self.hold_open)
+
     def close(self):
         print("Closing door")
         target = (self.door_x, self.door_y, self.door_z)
@@ -147,6 +153,7 @@ class LevelLoader():
              [33,107,107,107,107,107,33],
              [33,33,33,33,33,33,33]]
     start = (1,5,1)
+    object_list = []
 
     # https://devinsmith.net/backups/xwolf/tiles.html
     # all valid values for walls, floors an doors
@@ -163,6 +170,8 @@ class LevelLoader():
             for coord, code in data['object_list']:
                 if code in [19, 20, 21, 22]:
                     self.start = (coord[1], 5, coord[0])
+
+            self.object_list = data['object_list']
 
 
     def wall_file_name(self, val, northsouth=False):
@@ -190,6 +199,12 @@ class LevelLoader():
         return self.start
 
     def load(self):
+        self.load_walls()
+        self.load_objects()
+
+
+    def load_walls(self):
+
         logger.info("rendering cubes from map")
         lo = LevelOptimiser(self.level,
                             self.wall_lists,
@@ -230,3 +245,18 @@ class LevelLoader():
 
         print(f"made {total_cubes} walls")
 
+    def load_objects(self):
+
+        total_objects = 0
+
+        self.sprites = []
+
+        for coord, code in self.object_list:
+            # see WL_GAME.C and WL_ACT1.C for details on ojbects
+            if code in range(23, 74+1):
+                txt = SolidSprite.texture_filename(code)
+                y, x = coord
+                self.sprites.append(SolidSprite(txt, position=(x,0,y)))
+                total_objects += 1
+
+        print(f"make {total_objects} objects")

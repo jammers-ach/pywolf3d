@@ -33,6 +33,7 @@ class Wolf3dPlayer(Entity):
 
 
     def update(self):
+        rotate_sprites = False
 
         if application.development_mode:
             self.y -= held_keys['e']
@@ -40,9 +41,14 @@ class Wolf3dPlayer(Entity):
 
         if held_keys['a']:
             self.rotation_y -= 1
+            rotate_sprites = True
 
         if held_keys['d']:
             self.rotation_y += 1
+            rotate_sprites = True
+
+        if held_keys['w'] or held_keys['s']:
+            rotate_sprites = True
 
 
         self.direction = Vec3(
@@ -54,6 +60,9 @@ class Wolf3dPlayer(Entity):
         if not hit_info.hit:
             self.position += self.direction * self.speed * time.dt
 
+        if rotate_sprites and self.level:
+            for s in self.level.sprites:
+                s.face(self)
 
         if self.gravity:
             # # gravity
