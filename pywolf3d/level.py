@@ -1,7 +1,7 @@
 import json
 import logging
 
-from ursina import Entity, scene, color, random, Grid, Plane, load_texture, curve, invoke
+from ursina import Entity, scene, color, Grid, Plane, load_texture, curve, invoke, Mesh, load_model, Vec3
 
 from wall_runner import LevelOptimiser
 from sprites import SolidSprite
@@ -44,6 +44,61 @@ class Wall(Entity):
             rotation_z=z_rot,
             add_to_scene_entities=False,
         )
+
+cube = (
+    #x y z
+    (0,0,0), #0
+    (0,0,1), #1
+    (0,1,0), #2
+    (0,1,1), #3
+    (1,0,0), #4
+    (1,0,1), #5
+    (1,1,0), #6
+    (1,1,1), #7
+)
+quadverts = {
+    'w': [cube[x] for x in (6 ,2 ,0, 4, 6, 0)],
+    'e': [cube[x] for x in (1 ,3 ,7, 1, 7, 5)],
+    'n': [cube[x] for x in (5 ,7 ,6, 5, 6, 4)],
+    's': [cube[x] for x in (0 ,2 ,3, 0, 3, 1)],
+}
+
+class LevelMesh():
+    def __init__(self, floor_pane, wall_codes, door_codes, floor_codes):
+        lo = LevelOptimiser(floor_pane,
+                            wall_codes,
+                            floor_codes,
+                            door_codes)
+        level = lo.optimise()
+
+        self.quad = load_model('quad')
+        dungeon = Entity(model=Mesh(),
+                         collision=True,
+                         collider='mesh',
+                         )
+        model = dungeon.model
+        faces = 0
+
+        for z, row in enumerate(level):
+            h = len(row)
+            assert h == lo.h, f"row {z} is wrong length {lo.h} {h}"
+            for x, val in enumerate(row):
+                if val in wall_codes:
+                    for face in lo.external_walls(z,x):
+                        model.vertices.extend(self.vertices(face, x, 0, z)) # add quad vertices, but offset.
+                        model.colors.extend((color.random_color(),) * len(self.quad.vertices)) # add vertex colors.
+                        faces +=1
+
+        print(f"made {faces} faces")
+
+        model.uvs = (self.quad.uvs) * (lo.w * lo.h)
+        model.generate() # call to create the mesh
+
+
+    def vertices(self, facing, x, y, z):
+        vertices = [Vec3(x,y,z)+v for v in quadverts[facing]]
+        return vertices
+
 
 
 class Door(Entity):
@@ -145,7 +200,7 @@ class Door(Entity):
 class LevelLoader():
     level = [[33,33,33,33,33,33,33],
              [33,107,107,107,107,107,33],
-             [33,33,107,107,107,33,33],
+             [33,107,107,107,107,107,33],
              [33,107,107,107,107,107,33],
              [33,107,107, 33,107,107,33],
              [33,107,107,107,107,107,33],
@@ -204,15 +259,7 @@ class LevelLoader():
 
 
     def load_walls(self):
-
         logger.info("rendering cubes from map")
-        lo = LevelOptimiser(self.level,
-                            self.wall_lists,
-                            self.floor_lists,
-                            self.door_lists)
-        level = lo.optimise()
-        total_cubes = 0
-
 
         Entity(model=Grid(self.w,self.h),
                position=(int(self.w/2), 0, int(self.h/2)),
@@ -222,28 +269,34 @@ class LevelLoader():
                collider='box',
                rotation_x=90)
 
-        for z, row in enumerate(level):
-            h = len(row)
-            assert h == self.h, f"row {z} is wrong length {self.h} {h}"
-            for x, val in enumerate(row):
-                if val == -1:
-                    continue
-
-                if val in self.floor_lists:
-                    continue
-                if val in self.door_lists:
-                    face = "ew" if val %2 else "ns"
-                    Door(self.door_file_name(val), position=(x,0,z),
-                         facing=face)
-
-                if val in self.wall_lists:
-                    for face in lo.external_walls(z,x):
-                        Wall(self.wall_file_name(val, northsouth=face=='n' or face =='s'), position=(x,0,z),
-                            facing=face, )
-                        total_cubes += 1
+        self.lvlmesh = LevelMesh(self.level,
+                                 self.wall_lists,
+                                 self.door_lists,
+                                 self.floor_lists)
 
 
-        print(f"made {total_cubes} walls")
+        # for z, row in enumerate(level):
+            # h = len(row)
+            # assert h == self.h, f"row {z} is wrong length {self.h} {h}"
+            # for x, val in enumerate(row):
+                # if val == -1:
+                    # continue
+
+                # if val in self.floor_lists:
+                    # continue
+                # if val in self.door_lists:
+                    # face = "ew" if val %2 else "ns"
+                    # Door(self.door_file_name(val), position=(x,0,z),
+                         # facing=face)
+
+                # if val in self.wall_lists:
+                    # for face in lo.external_walls(z,x):
+                        # Wall(self.wall_file_name(val, northsouth=face=='n' or face =='s'), position=(x,0,z),
+                            # facing=face, )
+                        # total_cubes += 1
+
+
+        # print(f"made {total_cubes} walls")
 
     def load_objects(self):
 
