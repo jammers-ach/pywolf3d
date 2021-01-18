@@ -1,7 +1,7 @@
 import json
 import logging
 
-from ursina import Entity, scene, color, Grid, Plane, load_texture, curve, invoke, Mesh, load_model, Vec3
+from ursina import Entity, scene, color, Grid, Plane, load_texture, curve, invoke, Mesh, load_model, Vec3, MeshCollider
 
 from wall_runner import LevelOptimiser
 from sprites import SolidSprite
@@ -39,7 +39,7 @@ class Wall(Entity):
             texture = txt,
             color = color.white,
             collision=True,
-            collider='mesh',
+            collider='box',
             rotation_x=-90,
             rotation_z=z_rot,
             add_to_scene_entities=False,
@@ -136,6 +136,7 @@ class LevelMesh():
         for k,v in self.mesh_entities.items():
             v.model.uvs = (self.quad.uvs) * (lo.w * lo.h)
             v.model.generate() # call to create the mesh
+            v.collider = MeshCollider(v, mesh=v.model, center=Vec3(0,0,0))      # add MeshCollider with custom shape and center.
 
         meshes = len(self.mesh_entities.items())
         print(f"made {meshes} wall meshes")
