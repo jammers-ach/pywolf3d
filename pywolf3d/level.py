@@ -82,6 +82,8 @@ class LevelMesh():
 
         self.quad = load_model('quad')
         self.mesh_entities = {}
+        dark = color.light_gray
+        light = color.white
         faces = 0
 
         for z, row in enumerate(level):
@@ -94,12 +96,18 @@ class LevelMesh():
                                                          collision=True,
                                                          collider='mesh',
                                                          texture=load_texture(self.wall_file_name(val), path="wolfdata/extracted/")
-                                                         )
+                     )
                     model = self.mesh_entities[val].model
                     for face in lo.external_walls(z,x):
                         texture_file = self.wall_file_name(val, northsouth=face=='n' or face =='s')
                         txt = load_texture(texture_file, path="wolfdata/extracted/")
                         model.vertices.extend(self.vertices(face, x, 0, z)) # add quad vertices, but offset.
+
+                        if face == 'e' or face == 'w':
+                            model.colors.extend((dark,) * len(self.quad.vertices)) # add vertex colors.
+                        else:
+                            model.colors.extend((light,) * len(self.quad.vertices)) # add vertex colors.
+
                         faces +=1
 
                 if val in door_codes:
@@ -113,11 +121,15 @@ class LevelMesh():
                     face = "ew" if val %2 else "ns"
                     if face == "ew":
                         model.vertices.extend(self.vertices("n", x-1, 0, z))
+                        model.colors.extend((light,) * len(self.quad.vertices)) # add vertex colors.
                         model.vertices.extend(self.vertices("s", x+1, 0, z))
+                        model.colors.extend((light,) * len(self.quad.vertices)) # add vertex colors.
                         faces +=2
                     if face == "ns":
                         model.vertices.extend(self.vertices("e", x, 0, z-1))
+                        model.colors.extend((dark,) * len(self.quad.vertices)) # add vertex colors.
                         model.vertices.extend(self.vertices("w", x, 0, z+1))
+                        model.colors.extend((dark,) * len(self.quad.vertices)) # add vertex colors.
                         faces +=2
 
 
