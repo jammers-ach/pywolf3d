@@ -14,15 +14,18 @@ def extract(gamedir, target):
     game.load_all()
     game.output(target)
 
-def get_game(path):
+def get_game(path, level):
     if not os.path.isdir(path):
         print("{} is not a directory".format(path))
         return
 
+    level = level or "level0000.json"
+    print(f"loading level: {level}")
+
     # look inside the path directory for some extracted files
     path = pathlib.Path(path)
     target = path / "extracted"
-    level = path / "extracted" / "level0000.json"
+    level = path / "extracted" / level
 
     if not os.path.isdir(target) or not os.path.exists(level):
         print("no extracted data, looking for original")
@@ -42,9 +45,10 @@ def start_game(level_path):
 def run():
     parser = argparse.ArgumentParser(description='Wolf3d engine in ursina')
     parser.add_argument('--path', help='path to wolf3d datafiles (default ./wolfdata)', default="./wolfdata/")
+    parser.add_argument('--level',  help='path to level file')
     args = parser.parse_args()
 
-    first_level = get_game(pathlib.Path(args.path))
+    first_level = get_game(pathlib.Path(args.path), args.level)
     if first_level:
         start_game(first_level)
 

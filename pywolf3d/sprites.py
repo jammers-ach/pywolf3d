@@ -1,6 +1,6 @@
 import logging
-import math
 
+from pywolf3d import util
 from ursina import Entity, scene, Plane, color, load_texture
 
 logger = logging.getLogger(__name__)
@@ -54,7 +54,7 @@ class FacingSprite(Entity):
             "sprite0057",
         ]]
 
-        self.direction_index = 0
+        self.direction = 180
 
         super().__init__(
             parent = scene,
@@ -69,20 +69,12 @@ class FacingSprite(Entity):
     def face(self, target):
         ''' rotates this sprite so it faces target'''
         self.rotation_y = target.rotation_y
-        direction = direction_to_target(self, target)
+        angle = util.direction_to_target(self.position, target.position)
+        direction = util.angle_to_dir(angle + self.direction)
+
+        print(self.position, target.position, direction)
         self.texture = self.direction_textures[direction]
 
 
 
 
-def direction_to_target(a, b):
-    '''how many degrees from north is a to b'''
-    x1, y1, z1 = a.position
-    x2, y2, z2 = b.position
-
-    x = x2-x1
-    z = z2-z1
-
-    theta = math.atan(z/x)
-    angle = (90 - math.degrees(theta)) % 360
-    return int(angle / 360 * 8)
