@@ -1,11 +1,19 @@
 import argparse
 import json
 
-from ursina import Ursina, Entity, color, camera, Quad, mouse, time, window, invoke
+from ursina import load_texture, Ursina, Entity, color, camera, Quad, mouse, time, window, invoke
 
 Z_GRID = 0
 Z_WALL = 2
 
+
+def wall_file_name(val, northsouth=False):
+    '''returns the filename for a wall code'''
+    wall_code = (val-1)*2
+    if northsouth:
+        wall_code += 1
+    fname = f'wall{wall_code:04d}'
+    return fname
 
 class Grid(Entity):
     fov_step = 20
@@ -56,9 +64,11 @@ class Tile(Entity):
     def __init__(self, **kwargs):
         super().__init__()
         self.model='quad'
-        self.color = color.green
         self.z = Z_WALL
         self.collider='box'
+        texture_file = wall_file_name(kwargs['wall_code'])
+        txt = load_texture(texture_file, path="wolfdata/extracted/")
+        self.texture = txt
 
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -76,12 +86,22 @@ class Tile(Entity):
             print("down", self.x, self.y)
 
 def start_editor(level_data, path_to_game):
-    w = 16
-    h = 16
+    w = len(level_data['level'])
+    h = len(level_data['level'][0])
     app = Ursina()
     plane = Entity(model='quad', position=(w/2 - 0.5,h/2 - 0.5), color=color.azure, z=10, collider='box', scale=max(w,h)+2) # create an invisible plane for the mouse to collide with
     cursor = Grid()
-    grid = [[Tile(model='quad', position=(x,y), cursor=cursor ) for y in range(h)] for x in range(w)] # make 2d array of entities
+
+    grid = []
+    y = 0
+    for row in level_data['level']:
+        tile_row = []
+        x = 0
+        for wall_code in row:
+            tile_row.append(Tile(model='quad', position=(x,y), cursor=cursor, wall_code=wall_code))
+            x += 1
+        grid.append(tile_row)
+        y += 1
 
     camera.orthographic = True
     camera.fov = 5
