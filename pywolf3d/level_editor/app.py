@@ -1,48 +1,16 @@
 import argparse
 import json
-import random
 
 from ursina import load_texture, Ursina, Entity, color, camera, Quad, mouse, time, window, invoke, WindowPanel, \
     Text, InputField, Space, scene, Button, Draggable, Tooltip
 
+from pywolf3d.games.wolf3d import WALL_DEFS, WallDef
+
 Z_GRID = 0
 Z_WALL = 2
 
-class WallDef():
-    def __init__(self, code, description, filename=None):
-        self.code = code
-        self.description = description
-
-        if filename:
-            self.filename = filename
-        else:
-            self.filename = self.generate_filename(code)
-        print(self.filename)
-
-
-    def texture(self):
-        return load_texture(self.filename, path="wolfdata/extracted/")
-
-    @classmethod
-    def generate_filename(cls, val, northsouth=False):
-        '''returns the filename for a wall code'''
-        wall_code = (val-1)*2
-        if northsouth:
-            wall_code += 1
-        fname = f'wall{wall_code:04d}'
-        return fname
-
-
-WALL_DEFS = [
-    WallDef(1, "Grey stone"),
-    WallDef(2, "Grey stone2"),
-    WallDef(3, "Grey stone with swastika"),
-    WallDef(4, "Grey stone with hitler"),
-]
-
-
 class Inventory(Entity):
-    def __init__(self, rows=2, cols=5, **kwargs):
+    def __init__(self, rows=5, cols=10, **kwargs):
         super().__init__(
             parent = camera.ui,
             model = Quad(radius=.015),
@@ -60,22 +28,23 @@ class Inventory(Entity):
         for key, value in kwargs.items():
             setattr(self, key, value)
 
+        self.used_spots = []
+
 
     def find_free_spot(self):
         for y in range(self.cols):
             for x in range(self.rows):
-                grid_positions = [(int(e.x*self.texture_scale[0]), int(e.y*self.texture_scale[1])) for e in self.children]
-
-                if not (x,-y) in grid_positions:
+                if not (x,y) in self.used_spots:
+                    self.used_spots.append((x,y))
                     return x, y
+        raise Exception("No free spots")
 
 
     def append(self, wall_def, x=0, y=0):
-
         x, y = self.find_free_spot()
-
+        print(x,y)
         def clicked():
-            print("clicked")
+            print(f"clicked {wall_def.description}")
             self.cursor.current_tile = wall_def.code
 
         icon = Button(
@@ -162,8 +131,7 @@ class Tile(Entity):
             setattr(self, key, value)
 
     def set_texture(self, wall_code):
-        texture_file = WallDef.generate_filename(wall_code)
-        txt = load_texture(texture_file, path="wolfdata/extracted/")
+        txt = WALL_DEFS[wall_code-1].texture
         self.wall_code = wall_code
         self.texture = txt
 
