@@ -28,6 +28,14 @@ class WallDef():
         fname = f'wall{wall_code:04d}'
         return fname
 
+class FloorDef(WallDef):
+    def __init__(self, code, description, filename=None):
+        self.code = code
+        self.description = description
+
+        self.texture = 'white_cube'
+        self.editor_texture = 'white_cube'
+
 WALL_DEFS = [
     WallDef(1, "Grey stone"),
     WallDef(2, "Grey stone2"),

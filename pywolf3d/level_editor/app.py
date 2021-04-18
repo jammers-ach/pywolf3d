@@ -2,7 +2,7 @@ import argparse
 import json
 
 from ursina import load_texture, Ursina, Entity, color, camera, Quad, mouse, time, window, invoke, WindowPanel, \
-    Text, InputField, Space, scene, Button, Draggable, Tooltip
+    Text, InputField, Space, scene, Button, Draggable, Tooltip, Scrollable
 
 from pywolf3d.games.wolf3d import WALL_DEFS, WallDef
 
@@ -10,7 +10,7 @@ Z_GRID = 0
 Z_WALL = 2
 
 class Inventory(Entity):
-    def __init__(self, rows=5, cols=10, **kwargs):
+    def __init__(self, rows=2, cols=5, scrollable=True, **kwargs):
         super().__init__(
             parent = camera.ui,
             model = Quad(radius=.015),
@@ -32,7 +32,7 @@ class Inventory(Entity):
 
 
     def find_free_spot(self):
-        for y in range(self.cols):
+        for y in range(self.cols+30):
             for x in range(self.rows):
                 if not (x,y) in self.used_spots:
                     self.used_spots.append((x,y))
@@ -172,6 +172,7 @@ def start_editor(level_data, path_to_game):
     camera.position = (w/2,h/2)
 
     wall_holder = Inventory(cursor=cursor)
+    wall_holder.add_script(Scrollable())
 
     for w in WALL_DEFS:
         wall_holder.append(w)
