@@ -4,10 +4,74 @@ import json
 from ursina import load_texture, Ursina, Entity, color, camera, Quad, mouse, time, window, invoke, WindowPanel, \
     Text, InputField, Space, scene, Button, Draggable, Tooltip, Scrollable
 
-from pywolf3d.games.wolf3d import WALL_DEFS, WallDef
+from pywolf3d.games.wolf3d import WALL_DEFS, WallDef, OBJECT_DEFS
 
 Z_GRID = 0
 Z_WALL = 2
+
+
+class LevelEditor():
+    def __init__(self, fname, path_to_game):
+
+        level_data = None
+        self.fname = fname
+        with open(fname) as f:
+            level_data = json.load(f)
+
+        w = len(level_data['level'])
+        h = len(level_data['level'][0])
+
+        self.cursor = Grid(self, parent=scene)
+
+        self.grid = []
+        y = 0
+        for row in level_data['level']:
+            tile_row = []
+            x = 0
+            for wall_code in row:
+                tile_row.append(Tile(self, position=(x,y), cursor=self.cursor, wall_code=wall_code, parent=scene))
+
+                x += 1
+            self.grid.append(tile_row)
+            y += 1
+
+        camera.orthographic = True
+        camera.fov = 5
+        camera.position = (w/2,h/2)
+
+        self.wall_holder = Inventory(cursor=self.cursor)
+        self.wall_holder.add_script(Scrollable())
+
+        for _,w in WALL_DEFS.items():
+            self.wall_holder.append(w)
+
+        self.object_holder = Inventory(cursor=self.cursor, visible=False)
+        self.object_holder.add_script(Scrollable())
+
+        for _,w in OBJECT_DEFS.items():
+            self.object_holder.append(w)
+
+        self.mode = "tile"
+
+
+    def save(self):
+        json_data = {"object_list": [],
+                    "name": "test level",
+                    "size": []}
+
+        level = []
+        for r in self.grid:
+            row = []
+            for col in r:
+                row.append(col.wall_code)
+
+            level.append(row)
+        json_data["level"] = level
+
+        with open(self.fname, 'w') as f:
+            json.dump(json_data, f)
+            print(f"written to {self.fname}")
+
 
 class Inventory(Entity):
     def __init__(self, rows=2, cols=5, full_size=60, scrollable=True, **kwargs):
@@ -70,20 +134,18 @@ class Inventory(Entity):
         self.selected = item
 
 
-
 class Grid(Entity):
     fov_step = 20
     move_step = 10
     hold_step = 20
 
-    def __init__(self, **kwargs):
+    def __init__(self, editor, **kwargs):
         super().__init__()
         self.model=Quad(mode='line')
         self.color = color.red
         self.z = Z_GRID
         self.current_tile = 5
-        # TODO enum me
-        self.mode = "tile"
+        self.editor = editor
 
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -119,15 +181,19 @@ class Grid(Entity):
             camera.fov += self.fov_step * time.dt
 
         elif key == "s":
-            save()
+            self.editor.save()
+
+        elif key == "o":
+            self.editor.objects()
 
 
 class Tile(Entity):
-    def __init__(self, **kwargs):
+    def __init__(self, editor, **kwargs):
         super().__init__()
         self.model='quad'
         self.z = Z_WALL
         self.collider='box'
+        self.editor = editor
 
         self.set_texture(kwargs['wall_code'])
 
@@ -148,66 +214,18 @@ class Tile(Entity):
 
 
     def input(self, key):
-        # print(key)
-        if key == 'left mouse down' and self.hovered and self.cursor.mode == "tile":
+        if key == 'left mouse down' and self.hovered and self.editor.mode == "tile":
             self.set_texture(self.cursor.current_tile)
             print("down", self.x, self.y, ' - ', self.wall_code)
 
 
-# TODO refactor grid and save to they are not globals
-grid = []
-def save(fname="newlevel.json"):
-    # TODO filenames etc
-    json_data = {"object_list": [],
-                 "name": "test level",
-                 "size": []}
-
-    level = []
-    for r in grid:
-        row = []
-        for col in r:
-            row.append(col.wall_code)
-
-        level.append(row)
-    json_data["level"] = level
-
-    with open(fname, 'w') as f:
-        json.dump(json_data, f)
-        print(f"written to {fname}")
 
 
 
-def start_editor(level_data, path_to_game):
-    w = len(level_data['level'])
-    h = len(level_data['level'][0])
+def start_editor(fname, path_to_game):
     app = Ursina()
-    cursor = Grid(parent=scene)
-
-    y = 0
-    for row in level_data['level']:
-        tile_row = []
-        x = 0
-        for wall_code in row:
-            tile_row.append(Tile(position=(x,y), cursor=cursor, wall_code=wall_code, parent=scene))
-
-            x += 1
-        grid.append(tile_row)
-        y += 1
-
-    camera.orthographic = True
-    camera.fov = 5
-    camera.position = (w/2,h/2)
-
-    wall_holder = Inventory(cursor=cursor)
-    wall_holder.add_script(Scrollable())
-
-    for _,w in WALL_DEFS.items():
-        wall_holder.append(w)
-
-
+    editor = LevelEditor(fname, path_to_game)
     app.run()
-
-
 
 def run():
     parser = argparse.ArgumentParser(description='Mapmaker for pywolf3d')
@@ -216,11 +234,7 @@ def run():
                         default="./wolfdata/")
     args = parser.parse_args()
 
-    with open(args.level) as f:
-        print(f"Loading {args.level}")
-        data = json.load(f)
-
-    start_editor(data, args.path)
+    start_editor(args.level, args.path)
 
 if __name__ == '__main__':
     run()

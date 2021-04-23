@@ -185,4 +185,4 @@ _OBJECT_DEFS = [
     ObjectDef(71, "vines"),
 ]
 
-OBJECT_DEVS = {w.code: w for w in _OBJECT_DEFS}
+OBJECT_DEFS = {w.code: w for w in _OBJECT_DEFS}
