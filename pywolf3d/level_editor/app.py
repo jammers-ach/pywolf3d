@@ -118,6 +118,9 @@ class Grid(Entity):
         elif key == "-" or key == "- hold":
             camera.fov += self.fov_step * time.dt
 
+        elif key == "s":
+            save()
+
 
 class Tile(Entity):
     def __init__(self, **kwargs):
@@ -150,13 +153,36 @@ class Tile(Entity):
             self.set_texture(self.cursor.current_tile)
             print("down", self.x, self.y, ' - ', self.wall_code)
 
+
+# TODO refactor grid and save to they are not globals
+grid = []
+def save(fname="newlevel.json"):
+    # TODO filenames etc
+    json_data = {"object_list": [],
+                 "name": "test level",
+                 "size": []}
+
+    level = []
+    for r in grid:
+        row = []
+        for col in r:
+            row.append(col.wall_code)
+
+        level.append(row)
+    json_data["level"] = level
+
+    with open(fname, 'w') as f:
+        json.dump(json_data, f)
+        print(f"written to {fname}")
+
+
+
 def start_editor(level_data, path_to_game):
     w = len(level_data['level'])
     h = len(level_data['level'][0])
     app = Ursina()
     cursor = Grid(parent=scene)
 
-    grid = []
     y = 0
     for row in level_data['level']:
         tile_row = []
