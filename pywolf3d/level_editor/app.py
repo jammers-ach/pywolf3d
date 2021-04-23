@@ -157,7 +157,7 @@ class Inventory(Entity):
         icon = Button(
             parent = self,
             model = 'quad',
-            texture = wall_def.editor_texture,
+            icon = wall_def.editor_texture,
             color = color.white,
             scale_x = 1/self.texture_scale[0],
             scale_y = 1/self.texture_scale[1],
@@ -178,6 +178,7 @@ class Inventory(Entity):
 
     def toggle_visibility(self, visible):
         self.visible = visible
+        self.z = 0 if visible else 10
         for x in self.icons:
             x.visible = visible
             x.disabled = not  visible
