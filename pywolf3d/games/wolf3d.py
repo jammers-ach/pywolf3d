@@ -33,10 +33,13 @@ class FloorDef(WallDef):
         self.code = code
         self.description = description
 
-        self.texture = 'white_cube'
-        self.editor_texture = 'white_cube'
+        self._texture = 'white_cube'
 
-WALL_DEFS = [
+    @property
+    def texture(self):
+        return self._texture
+
+_WALL_DEFS = [
     WallDef(1, "Grey stone"),
     WallDef(2, "Grey stone2"),
     WallDef(3, "Grey stone with swastika"),
@@ -87,4 +90,13 @@ WALL_DEFS = [
     WallDef(48, "grey bricks w hitler"),
     WallDef(49, "door"),
 ]
+
+
+floors = [FloorDef(x, f"floor {x}") for x in range(106, 143+1)]
+doors = [FloorDef(x, f"door {x}") for x in range(90, 101+1)]
+
+_WALL_DEFS.extend(floors)
+_WALL_DEFS.extend(doors)
+
+WALL_DEFS = {w.code: w for w in _WALL_DEFS}
 

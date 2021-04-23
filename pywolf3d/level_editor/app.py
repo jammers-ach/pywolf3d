@@ -10,7 +10,7 @@ Z_GRID = 0
 Z_WALL = 2
 
 class Inventory(Entity):
-    def __init__(self, rows=2, cols=5, scrollable=True, **kwargs):
+    def __init__(self, rows=2, cols=5, full_size=60, scrollable=True, **kwargs):
         super().__init__(
             parent = camera.ui,
             model = Quad(radius=.015),
@@ -24,6 +24,7 @@ class Inventory(Entity):
 
         self.rows = rows
         self.cols = cols
+        self.full_cols = full_size - cols
 
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -32,7 +33,7 @@ class Inventory(Entity):
 
 
     def find_free_spot(self):
-        for y in range(self.cols+30):
+        for y in range(self.cols+self.full_cols):
             for x in range(self.rows):
                 if not (x,y) in self.used_spots:
                     self.used_spots.append((x,y))
@@ -50,7 +51,7 @@ class Inventory(Entity):
         icon = Button(
             parent = self,
             model = 'quad',
-            texture = load_texture(wall_def.filename, path="wolfdata/extracted/"),
+            texture = wall_def.editor_texture,
             color = color.white,
             scale_x = 1/self.texture_scale[0],
             scale_y = 1/self.texture_scale[1],
@@ -131,7 +132,7 @@ class Tile(Entity):
             setattr(self, key, value)
 
     def set_texture(self, wall_code):
-        txt = WALL_DEFS[wall_code-1].texture
+        txt = WALL_DEFS[wall_code].texture
         self.wall_code = wall_code
         self.texture = txt
 
@@ -174,7 +175,7 @@ def start_editor(level_data, path_to_game):
     wall_holder = Inventory(cursor=cursor)
     wall_holder.add_script(Scrollable())
 
-    for w in WALL_DEFS:
+    for _,w in WALL_DEFS.items():
         wall_holder.append(w)
 
 
