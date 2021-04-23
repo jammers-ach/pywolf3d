@@ -7,7 +7,8 @@ from ursina import load_texture, Ursina, Entity, color, camera, Quad, mouse, tim
 from pywolf3d.games.wolf3d import WALL_DEFS, WallDef, OBJECT_DEFS
 
 Z_GRID = 0
-Z_WALL = 2
+Z_OBJECT = 2
+Z_WALL = 3
 
 
 class LevelEditor():
@@ -22,7 +23,6 @@ class LevelEditor():
         h = len(level_data['level'][0])
 
         self.cursor = Grid(self, parent=scene)
-
         self.grid = []
         y = 0
         for row in level_data['level']:
@@ -35,24 +35,61 @@ class LevelEditor():
             self.grid.append(tile_row)
             y += 1
 
+
+        self.object_grid = [[None for x in range(x) ] for y in range(y)]
+        for coord, code in level_data['object_list']:
+            if code in range(23, 74+1):
+                y, x = coord
+                self.update_object_grid(x, y, code)
+
         camera.orthographic = True
         camera.fov = 5
         camera.position = (w/2,h/2)
 
-        self.wall_holder = Inventory(cursor=self.cursor)
+        def wall_inventory_click(code):
+            print(f"clicked tile {code}")
+            print(self)
+            self.current_tile = code
+            self.mode = "tile"
+
+        self.wall_holder = Inventory(wall_inventory_click, cursor=self.cursor)
         self.wall_holder.add_script(Scrollable())
 
         for _,w in WALL_DEFS.items():
             self.wall_holder.append(w)
 
-        self.object_holder = Inventory(cursor=self.cursor, visible=False)
+        def object_inventory_click(code):
+            print(f"clicked object {code}")
+            self.current_tile = code
+            self.mode = "object"
+
+        self.object_holder = Inventory(object_inventory_click, cursor=self.cursor, visible=False)
         self.object_holder.add_script(Scrollable())
+
 
         for _,w in OBJECT_DEFS.items():
             self.object_holder.append(w)
 
+        self.current_tile = 1
         self.mode = "tile"
 
+
+    def objects(self):
+        '''switches between tile and object mode'''
+        if self.mode == "tile":
+            self.mode = "object"
+            self.current_tile = 25
+            self.object_holder.visible = True
+            self.wall_holder.visible = False
+
+        elif self.mode == "object":
+            self.mode = "tile"
+            self.current_tile = 1
+            self.object_holder.visible = False
+            self.wall_holder.visible = True
+
+    def update_object_grid(self, x, y, code):
+        self.object_grid[int(x)][int(y)] = ObjectTile(self, OBJECT_DEFS[code], position=(x,y), cursor=self.cursor, parent=scene)
 
     def save(self):
         json_data = {"object_list": [],
@@ -68,13 +105,19 @@ class LevelEditor():
             level.append(row)
         json_data["level"] = level
 
+        for r in self.object_grid:
+            row = []
+            for col in r:
+                if col:
+                    json_data["object_list"].append([(col.y, col.x), col.obj_tile.code])
+
         with open(self.fname, 'w') as f:
             json.dump(json_data, f)
             print(f"written to {self.fname}")
 
 
 class Inventory(Entity):
-    def __init__(self, rows=2, cols=5, full_size=60, scrollable=True, **kwargs):
+    def __init__(self, make_click, rows=2, cols=5, full_size=60, scrollable=True, **kwargs):
         super().__init__(
             parent = camera.ui,
             model = Quad(radius=.015),
@@ -85,6 +128,8 @@ class Inventory(Entity):
             position = (-0.9,.5),
             color = color.color(0,0,.1,.9),
             )
+
+        self.make_click = make_click
 
         self.rows = rows
         self.cols = cols
@@ -107,10 +152,9 @@ class Inventory(Entity):
 
     def append(self, wall_def, x=0, y=0):
         x, y = self.find_free_spot()
-        print(x,y)
+
         def clicked():
-            print(f"clicked {wall_def.description}")
-            self.cursor.current_tile = wall_def.code
+            self.make_click(wall_def.code)
 
         icon = Button(
             parent = self,
@@ -156,7 +200,6 @@ class Grid(Entity):
         self.y = round(self.y, 0)
 
     def input(self, key):
-        # print(key)
         if key == "up arrow":
             camera.y += self.move_step * time.dt
         elif key == "down arrow":
@@ -214,12 +257,26 @@ class Tile(Entity):
 
 
     def input(self, key):
-        if key == 'left mouse down' and self.hovered and self.editor.mode == "tile":
-            self.set_texture(self.cursor.current_tile)
+        if key == 'left mouse down' and self.hovered:
             print("down", self.x, self.y, ' - ', self.wall_code)
+            if self.editor.mode == "tile":
+                self.set_texture(self.editor.current_tile)
+            elif self.editor.mode == "object":
+                self.editor.update_object_grid(self.x, self.y, self.editor.current_tile)
 
 
+class ObjectTile(Entity):
+    def __init__(self, editor, obj_tile, **kwargs):
+        super().__init__()
+        self.model='quad'
+        self.z = Z_OBJECT
+        self.collider=None
+        self.editor = editor
+        self.texture = obj_tile.editor_texture
+        self.obj_tile = obj_tile
 
+        for key, value in kwargs.items():
+            setattr(self, key, value)
 
 
 def start_editor(fname, path_to_game):
