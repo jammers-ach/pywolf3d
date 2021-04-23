@@ -48,7 +48,6 @@ class LevelEditor():
 
         def wall_inventory_click(code):
             print(f"clicked tile {code}")
-            print(self)
             self.current_tile = code
             self.mode = "tile"
 
@@ -66,7 +65,6 @@ class LevelEditor():
         self.object_holder = Inventory(object_inventory_click, cursor=self.cursor, visible=False)
         self.object_holder.add_script(Scrollable())
 
-
         for _,w in OBJECT_DEFS.items():
             self.object_holder.append(w)
 
@@ -79,14 +77,13 @@ class LevelEditor():
         if self.mode == "tile":
             self.mode = "object"
             self.current_tile = 25
-            self.object_holder.visible = True
-            self.wall_holder.visible = False
-
+            self.object_holder.toggle_visibility(True)
+            self.wall_holder.toggle_visibility(False)
         elif self.mode == "object":
             self.mode = "tile"
             self.current_tile = 1
-            self.object_holder.visible = False
-            self.wall_holder.visible = True
+            self.object_holder.toggle_visibility(False)
+            self.wall_holder.toggle_visibility(True)
 
     def update_object_grid(self, x, y, code):
         self.object_grid[int(x)][int(y)] = ObjectTile(self, OBJECT_DEFS[code], position=(x,y), cursor=self.cursor, parent=scene)
@@ -134,6 +131,7 @@ class Inventory(Entity):
         self.rows = rows
         self.cols = cols
         self.full_cols = full_size - cols
+        self.icons = []
 
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -171,11 +169,18 @@ class Inventory(Entity):
             )
         icon.tooltip = Tooltip(wall_def.description)
         icon.tooltip.background.color = color.color(0,0,0,.8)
+        self.icons.append(icon)
 
 
     def item_clicked(self, item):
         self.selected.deselect()
         self.selected = item
+
+    def toggle_visibility(self, visible):
+        self.visible = visible
+        for x in self.icons:
+            x.visible = visible
+            x.disabled = not  visible
 
 
 class Grid(Entity):
