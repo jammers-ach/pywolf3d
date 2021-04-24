@@ -38,9 +38,11 @@ class LevelEditor():
 
         self.object_grid = [[None for y in range(y) ] for x in range(x)]
         for coord, code in level_data['object_list']:
-            if code in range(23, 74+1):
+            if code in OBJECT_DEFS:
                 y, x = coord
                 self.update_object_grid(x, y, code)
+            else:
+                print(f"ignoring object {code} at {coord}")
 
         camera.orthographic = True
         camera.fov = 5

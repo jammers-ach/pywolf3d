@@ -163,6 +163,10 @@ class ObjectDef():
 
 
 _OBJECT_DEFS = [
+    ObjectDef(19, "player start (n)", filename="sprite0408"),
+    ObjectDef(20, "player start (e)", filename="sprite0408"),
+    ObjectDef(21, "player start (s)", filename="sprite0408"),
+    ObjectDef(22, "player start (w)", filename="sprite0408"),
     ObjectDef(23, "water pool"),
     ObjectDef(24, "green barrel"),
     ObjectDef(25, "chairs"),
@@ -211,6 +215,10 @@ _OBJECT_DEFS = [
     ObjectDef(68, "boiler"),
     ObjectDef(69, "spears"),
     ObjectDef(70, "vines"),
+    ObjectDef(71, "?"),
+    ObjectDef(72, "?"),
+    ObjectDef(73, "?"),
+    ObjectDef(74, "?"),
 ]
 
 OBJECT_DEFS = {w.code: w for w in _OBJECT_DEFS}
