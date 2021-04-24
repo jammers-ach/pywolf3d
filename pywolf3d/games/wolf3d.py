@@ -1,5 +1,7 @@
 from ursina import load_texture
 
+## Wall defs
+
 class WallDef():
     def __init__(self, code, description, filename=None):
         self.code = code
@@ -9,7 +11,6 @@ class WallDef():
             self.filename = filename
         else:
             self.filename = self.generate_filename(code)
-        print(self.filename)
 
     @property
     def texture(self):
@@ -38,6 +39,13 @@ class FloorDef(WallDef):
     @property
     def texture(self):
         return self._texture
+
+class DoorDef(WallDef):
+    @classmethod
+    def generate_filename(cls, val, northsouth=False):
+        '''returns the filename for a door code'''
+        # TODO actually generate door codes...
+        return 'wall0098'
 
 _WALL_DEFS = [
     WallDef(1, "Grey stone"),
@@ -91,12 +99,90 @@ _WALL_DEFS = [
     WallDef(49, "door"),
 ]
 
-
-floors = [FloorDef(x, f"floor {x}") for x in range(106, 143+1)]
-doors = [FloorDef(x, f"door {x}") for x in range(90, 101+1)]
-
-_WALL_DEFS.extend(floors)
-_WALL_DEFS.extend(doors)
+_WALL_DEFS.extend([FloorDef(x, f"floor {x}") for x in range(106, 143+1)])
+_WALL_DEFS.extend([DoorDef(x, f"door {x}") for x in range(90, 101+1)])
 
 WALL_DEFS = {w.code: w for w in _WALL_DEFS}
 
+
+## Objects
+
+class ObjectDef():
+    def __init__(self, code, description, filename=None):
+        self.code = code
+        self.description = description
+
+        if filename:
+            self.filename = filename
+        else:
+            self.filename = self.generate_filename(code)
+
+    @property
+    def texture(self):
+        return load_texture(self.filename, path="wolfdata/extracted/")
+
+    @property
+    def editor_texture(self):
+        return self.texture
+
+    @classmethod
+    def generate_filename(cls, val):
+        '''returns the filename for a wall code'''
+        sprite_code = val - 21
+        fname = f'sprite{sprite_code:04d}'
+        return fname
+
+
+_OBJECT_DEFS = [
+    ObjectDef(23, "water pool"),
+    ObjectDef(24, "green barrel"),
+    ObjectDef(25, "chairs"),
+    ObjectDef(26, "green lamp"),
+    ObjectDef(27, "chandelier"),
+    ObjectDef(28, "hanging skeleton"),
+    ObjectDef(29, "poridge"),
+    ObjectDef(30, "stone column"),
+    ObjectDef(31, "green plant"),
+    ObjectDef(32, "skeleton"),
+    ObjectDef(33, "sink"),
+    ObjectDef(34, "fern"),
+    ObjectDef(35, "empty vase"),
+    ObjectDef(36, "table"),
+    ObjectDef(37, "green light"),
+    ObjectDef(38, "hanging pots"),
+    ObjectDef(39, "suit of armour"),
+    ObjectDef(40, "empty cage"),
+    ObjectDef(41, "cage with skeleton"),
+    ObjectDef(42, "bones"),
+    ObjectDef(43, "gold key"),
+    ObjectDef(44, "blue key"),
+    ObjectDef(45, "bed"),
+    ObjectDef(46, "basket"),
+    ObjectDef(47, "chicken"),
+    ObjectDef(48, "health pack"),
+    ObjectDef(49, "clip"),
+    ObjectDef(50, "machine gun"),
+    ObjectDef(51, "chain gun"),
+    ObjectDef(52, "treasure"),
+    ObjectDef(53, "treasure"),
+    ObjectDef(54, "treasure"),
+    ObjectDef(55, "treasure"),
+    ObjectDef(56, "treasure"),
+    ObjectDef(57, "extra life"),
+    ObjectDef(58, "bones and blood"),
+    ObjectDef(59, "wooden barrel"),
+    ObjectDef(60, "well"),
+    ObjectDef(61, "empty well"),
+    ObjectDef(62, "blood"),
+    ObjectDef(63, "flag"),
+    ObjectDef(64, "ardwolf"),
+    ObjectDef(65, "bones"),
+    ObjectDef(66, "bones"),
+    ObjectDef(67, "bones"),
+    ObjectDef(68, "kitchen equipment"),
+    ObjectDef(69, "boiler"),
+    ObjectDef(70, "spears"),
+    ObjectDef(71, "vines"),
+]
+
+OBJECT_DEFS = {w.code: w for w in _OBJECT_DEFS}
