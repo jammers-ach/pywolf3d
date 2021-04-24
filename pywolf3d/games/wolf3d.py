@@ -49,7 +49,6 @@ class DoorDef(WallDef):
     @classmethod
     def generate_filename(cls, val, northsouth=False):
         '''returns the filename for a door code'''
-        # TODO actually generate door codes...
         return 'wall0098'
 
     @property
@@ -118,7 +117,19 @@ _WALL_DEFS = [
 ]
 
 _WALL_DEFS.extend([FloorDef(x, f"floor {x}") for x in range(106, 143+1)])
-_WALL_DEFS.extend([DoorDef(x, f"door {x}") for x in range(90, 101+1)])
+_WALL_DEFS.extend([DoorDef(90, f"door"),
+                   DoorDef(91, f"door"),
+                   DoorDef(92, f"door", filename="wall0104"),
+                   DoorDef(93, f"door", filename="wall0104"),
+                   DoorDef(94, f"door", filename="wall0104"),
+                   DoorDef(95, f"door", filename="wall0104"),
+                   DoorDef(96, f"door", filename="wall0104"),
+                   DoorDef(97, f"door", filename="wall0104"),
+                   DoorDef(98, f"door", filename="wall0104"),
+                   DoorDef(99, f"door", filename="wall0104"),
+                   DoorDef(100, f"Elevator door", filename="wall0102"),
+                   DoorDef(101, f"Elevator door", filename="wall0102"),
+                   ])
 
 WALL_DEFS = {w.code: w for w in _WALL_DEFS}
 
