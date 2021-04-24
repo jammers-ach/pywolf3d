@@ -1,4 +1,4 @@
-from ursina import load_texture
+from ursina import load_texture, Texture
 
 ## Wall defs
 
@@ -41,11 +41,28 @@ class FloorDef(WallDef):
         return self._texture
 
 class DoorDef(WallDef):
+    def __init__(self, code, description, filename=None):
+        super().__init__(code, description, filename)
+        self.face = "ew" if code %2 else "ns"
+        self.description += f" ({self.face})"
+
     @classmethod
     def generate_filename(cls, val, northsouth=False):
         '''returns the filename for a door code'''
         # TODO actually generate door codes...
         return 'wall0098'
+
+    @property
+    def editor_texture(self):
+        if self.face == "ns":
+            from PIL import Image
+            txt = Texture(f"wolfdata/extracted/{self.filename}.png")
+            txt.apply()
+            txt._cached_image = txt._cached_image.transpose(Image.ROTATE_90)
+            txt.apply()
+            return txt
+        else:
+            return self.texture
 
 _WALL_DEFS = [
     WallDef(1, "Grey stone"),
@@ -79,24 +96,25 @@ _WALL_DEFS = [
     WallDef(29, "brown stone w/ blood"),
     WallDef(30, "brown stone w/ blood 2"),
     WallDef(31, "brown stone w/ blood 3"),
-    WallDef(32, "stain glass hitler"),
-    WallDef(33, "blue wall with skull"),
-    WallDef(34, "grey bricks"),
-    WallDef(35, "blue brick w/ swastika"),
-    WallDef(36, "grey bricks with sewer"),
-    WallDef(37, "misc red bricks"),
-    WallDef(38, "grey bricks 2"),
-    WallDef(39, "blue wall"),
-    WallDef(40, "blue bricks with warning sign"),
-    WallDef(41, "brown tiles"),
-    WallDef(42, "grey bricks with map"),
-    WallDef(43, "light brown bricks"),
-    WallDef(44, "light brown bricks 2"),
-    WallDef(45, "brown tiles 2"),
-    WallDef(46, "brown tiles w swastika"),
-    WallDef(47, "brown tiles w space"),
-    WallDef(48, "grey bricks w hitler"),
-    WallDef(49, "door"),
+    WallDef(32, "brown stone w/ blood 4"),
+    WallDef(33, "stain glass hitler"),
+    WallDef(34, "blue wall with skull"),
+    WallDef(35, "grey bricks"),
+    WallDef(36, "blue brick w/ swastika"),
+    WallDef(37, "grey bricks with sewer"),
+    WallDef(38, "misc red bricks"),
+    WallDef(39, "grey bricks 2"),
+    WallDef(40, "blue wall"),
+    WallDef(41, "blue bricks with warning sign"),
+    WallDef(42, "brown tiles"),
+    WallDef(43, "grey bricks with map"),
+    WallDef(44, "light brown bricks"),
+    WallDef(45, "light brown bricks 2"),
+    WallDef(46, "brown tiles 2"),
+    WallDef(47, "brown tiles w swastika"),
+    WallDef(48, "brown tiles w space"),
+    WallDef(49, "grey bricks w hitler"),
+    WallDef(50, "door"),
 ]
 
 _WALL_DEFS.extend([FloorDef(x, f"floor {x}") for x in range(106, 143+1)])
@@ -167,22 +185,21 @@ _OBJECT_DEFS = [
     ObjectDef(53, "treasure"),
     ObjectDef(54, "treasure"),
     ObjectDef(55, "treasure"),
-    ObjectDef(56, "treasure"),
-    ObjectDef(57, "extra life"),
-    ObjectDef(58, "bones and blood"),
-    ObjectDef(59, "wooden barrel"),
-    ObjectDef(60, "well"),
-    ObjectDef(61, "empty well"),
-    ObjectDef(62, "blood"),
-    ObjectDef(63, "flag"),
-    ObjectDef(64, "ardwolf"),
+    ObjectDef(56, "extra life"),
+    ObjectDef(57, "bones and blood"),
+    ObjectDef(58, "wooden barrel"),
+    ObjectDef(59, "well"),
+    ObjectDef(60, "empty well"),
+    ObjectDef(61, "blood"),
+    ObjectDef(62, "flag"),
+    ObjectDef(63, "ardwolf"),
+    ObjectDef(64, "bones"),
     ObjectDef(65, "bones"),
     ObjectDef(66, "bones"),
-    ObjectDef(67, "bones"),
-    ObjectDef(68, "kitchen equipment"),
-    ObjectDef(69, "boiler"),
-    ObjectDef(70, "spears"),
-    ObjectDef(71, "vines"),
+    ObjectDef(67, "kitchen equipment"),
+    ObjectDef(68, "boiler"),
+    ObjectDef(69, "spears"),
+    ObjectDef(70, "vines"),
 ]
 
 OBJECT_DEFS = {w.code: w for w in _OBJECT_DEFS}

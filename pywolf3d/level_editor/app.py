@@ -254,7 +254,7 @@ class Tile(Entity):
             setattr(self, key, value)
 
     def set_texture(self, wall_code):
-        txt = WALL_DEFS[wall_code].texture
+        txt = WALL_DEFS[wall_code].editor_texture
         self.wall_code = wall_code
         self.texture = txt
 
