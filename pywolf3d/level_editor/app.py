@@ -36,7 +36,7 @@ class LevelEditor():
             y += 1
 
 
-        self.object_grid = [[None for x in range(x) ] for y in range(y)]
+        self.object_grid = [[None for y in range(y) ] for x in range(x)]
         for coord, code in level_data['object_list']:
             if code in range(23, 74+1):
                 y, x = coord
@@ -86,7 +86,11 @@ class LevelEditor():
             self.wall_holder.toggle_visibility(True)
 
     def update_object_grid(self, x, y, code):
-        self.object_grid[int(x)][int(y)] = ObjectTile(self, OBJECT_DEFS[code], position=(x,y), cursor=self.cursor, parent=scene)
+        x,y = int(x), int(y)
+        if self.object_grid[x][y]:
+            self.object_grid[x][y].set_obj_tile(OBJECT_DEFS[code])
+        else:
+            self.object_grid[x][y] = ObjectTile(self, OBJECT_DEFS[code], position=(x,y), cursor=self.cursor, parent=scene)
 
     def save(self):
         json_data = {"object_list": [],
@@ -283,6 +287,11 @@ class ObjectTile(Entity):
 
         for key, value in kwargs.items():
             setattr(self, key, value)
+
+
+    def set_obj_tile(self, obj_tile):
+        self.texture = obj_tile.editor_texture
+        self.obj_tile = obj_tile
 
 
 def start_editor(fname, path_to_game):
