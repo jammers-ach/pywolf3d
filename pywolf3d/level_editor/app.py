@@ -120,7 +120,7 @@ class LevelEditor():
 
 
 class Inventory(Entity):
-    def __init__(self, make_click, rows=2, cols=5, full_size=60, scrollable=True, **kwargs):
+    def __init__(self, make_click, rows=2, cols=5, full_size=120, scrollable=True, **kwargs):
         super().__init__(
             parent = camera.ui,
             model = Quad(radius=.015),
