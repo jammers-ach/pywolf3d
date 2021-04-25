@@ -1,4 +1,4 @@
-from ursina import load_texture
+from ursina import load_texture, Texture
 
 ## Wall defs
 
@@ -41,11 +41,27 @@ class FloorDef(WallDef):
         return self._texture
 
 class DoorDef(WallDef):
+    def __init__(self, code, description, filename=None):
+        super().__init__(code, description, filename)
+        self.face = "ew" if code %2 else "ns"
+        self.description += f" ({self.face})"
+
     @classmethod
     def generate_filename(cls, val, northsouth=False):
         '''returns the filename for a door code'''
-        # TODO actually generate door codes...
         return 'wall0098'
+
+    @property
+    def editor_texture(self):
+        if self.face == "ns":
+            from PIL import Image
+            txt = Texture(f"wolfdata/extracted/{self.filename}.png")
+            txt.apply()
+            txt._cached_image = txt._cached_image.transpose(Image.ROTATE_90)
+            txt.apply()
+            return txt
+        else:
+            return self.texture
 
 _WALL_DEFS = [
     WallDef(1, "Grey stone"),
@@ -79,28 +95,41 @@ _WALL_DEFS = [
     WallDef(29, "brown stone w/ blood"),
     WallDef(30, "brown stone w/ blood 2"),
     WallDef(31, "brown stone w/ blood 3"),
-    WallDef(32, "stain glass hitler"),
-    WallDef(33, "blue wall with skull"),
-    WallDef(34, "grey bricks"),
-    WallDef(35, "blue brick w/ swastika"),
-    WallDef(36, "grey bricks with sewer"),
-    WallDef(37, "misc red bricks"),
-    WallDef(38, "grey bricks 2"),
-    WallDef(39, "blue wall"),
-    WallDef(40, "blue bricks with warning sign"),
-    WallDef(41, "brown tiles"),
-    WallDef(42, "grey bricks with map"),
-    WallDef(43, "light brown bricks"),
-    WallDef(44, "light brown bricks 2"),
-    WallDef(45, "brown tiles 2"),
-    WallDef(46, "brown tiles w swastika"),
-    WallDef(47, "brown tiles w space"),
-    WallDef(48, "grey bricks w hitler"),
-    WallDef(49, "door"),
+    WallDef(32, "brown stone w/ blood 4"),
+    WallDef(33, "stain glass hitler"),
+    WallDef(34, "blue wall with skull"),
+    WallDef(35, "grey bricks"),
+    WallDef(36, "blue brick w/ swastika"),
+    WallDef(37, "grey bricks with sewer"),
+    WallDef(38, "misc red bricks"),
+    WallDef(39, "grey bricks 2"),
+    WallDef(40, "blue wall"),
+    WallDef(41, "blue bricks with warning sign"),
+    WallDef(42, "brown tiles"),
+    WallDef(43, "grey bricks with map"),
+    WallDef(44, "light brown bricks"),
+    WallDef(45, "light brown bricks 2"),
+    WallDef(46, "brown tiles 2"),
+    WallDef(47, "brown tiles w swastika"),
+    WallDef(48, "brown tiles w space"),
+    WallDef(49, "grey bricks w hitler"),
+    WallDef(50, "door"),
 ]
 
 _WALL_DEFS.extend([FloorDef(x, f"floor {x}") for x in range(106, 143+1)])
-_WALL_DEFS.extend([DoorDef(x, f"door {x}") for x in range(90, 101+1)])
+_WALL_DEFS.extend([DoorDef(90, f"door"),
+                   DoorDef(91, f"door"),
+                   DoorDef(92, f"door", filename="wall0104"),
+                   DoorDef(93, f"door", filename="wall0104"),
+                   DoorDef(94, f"door", filename="wall0104"),
+                   DoorDef(95, f"door", filename="wall0104"),
+                   DoorDef(96, f"door", filename="wall0104"),
+                   DoorDef(97, f"door", filename="wall0104"),
+                   DoorDef(98, f"door", filename="wall0104"),
+                   DoorDef(99, f"door", filename="wall0104"),
+                   DoorDef(100, f"Elevator door", filename="wall0102"),
+                   DoorDef(101, f"Elevator door", filename="wall0102"),
+                   ])
 
 WALL_DEFS = {w.code: w for w in _WALL_DEFS}
 
@@ -132,8 +161,19 @@ class ObjectDef():
         fname = f'sprite{sprite_code:04d}'
         return fname
 
+directions = ["n", "e",  "s", "w", ]
+
+class EnemyDef(ObjectDef):
+    def __init__(self, code, description, difficulty, facing, filename=None):
+        super().__init__(code, description, filename=filename)
+        self.description += f" {facing} {difficulty}"
+
 
 _OBJECT_DEFS = [
+    ObjectDef(19, "player start (n)", filename="sprite0408"),
+    ObjectDef(20, "player start (e)", filename="sprite0408"),
+    ObjectDef(21, "player start (s)", filename="sprite0408"),
+    ObjectDef(22, "player start (w)", filename="sprite0408"),
     ObjectDef(23, "water pool"),
     ObjectDef(24, "green barrel"),
     ObjectDef(25, "chairs"),
@@ -167,22 +207,70 @@ _OBJECT_DEFS = [
     ObjectDef(53, "treasure"),
     ObjectDef(54, "treasure"),
     ObjectDef(55, "treasure"),
-    ObjectDef(56, "treasure"),
-    ObjectDef(57, "extra life"),
-    ObjectDef(58, "bones and blood"),
-    ObjectDef(59, "wooden barrel"),
-    ObjectDef(60, "well"),
-    ObjectDef(61, "empty well"),
-    ObjectDef(62, "blood"),
-    ObjectDef(63, "flag"),
-    ObjectDef(64, "ardwolf"),
+    ObjectDef(56, "extra life"),
+    ObjectDef(57, "bones and blood"),
+    ObjectDef(58, "wooden barrel"),
+    ObjectDef(59, "well"),
+    ObjectDef(60, "empty well"),
+    ObjectDef(61, "blood"),
+    ObjectDef(62, "flag"),
+    ObjectDef(63, "ardwolf"),
+    ObjectDef(64, "bones"),
     ObjectDef(65, "bones"),
     ObjectDef(66, "bones"),
-    ObjectDef(67, "bones"),
-    ObjectDef(68, "kitchen equipment"),
-    ObjectDef(69, "boiler"),
-    ObjectDef(70, "spears"),
-    ObjectDef(71, "vines"),
+    ObjectDef(67, "kitchen equipment"),
+    ObjectDef(68, "boiler"),
+    ObjectDef(69, "spears"),
+    ObjectDef(70, "vines"),
+    ObjectDef(71, "?"),
+    ObjectDef(72, "?"),
+    ObjectDef(73, "?"),
+    ObjectDef(74, "?"),
+    ObjectDef(124, "Dead guard", filename="sprite0095"),
 ]
+
+def make_guard(start_code, name, start_sprite, difficulty):
+    return [EnemyDef(start_code + x, name, difficulty,d, filename=f'sprite{(x*2)+start_sprite:04d}')
+            for x,d in enumerate(directions)]
+
+_OBJECT_DEFS.extend(make_guard(108, "guard", 50, "easy"))
+_OBJECT_DEFS.extend(make_guard(144, "guard", 50, "medium"))
+_OBJECT_DEFS.extend(make_guard(180, "guard", 50, "hard"))
+
+_OBJECT_DEFS.extend(make_guard(112, "guard patroling", 58, "easy"))
+_OBJECT_DEFS.extend(make_guard(148, "guard patroling", 58, "medium"))
+_OBJECT_DEFS.extend(make_guard(184, "guard patroling", 58, "hard"))
+
+_OBJECT_DEFS.extend(make_guard(116, "officer", 238, "easy"))
+_OBJECT_DEFS.extend(make_guard(156, "officer", 238, "medium"))
+_OBJECT_DEFS.extend(make_guard(188, "officer", 238, "hard"))
+
+_OBJECT_DEFS.extend(make_guard(120, "officer patroling", 246, "easy"))
+_OBJECT_DEFS.extend(make_guard(156, "officer patroling", 246, "medium"))
+_OBJECT_DEFS.extend(make_guard(192, "officer patroling", 246, "hard"))
+
+_OBJECT_DEFS.extend(make_guard(126, "ss", 138, "easy"))
+_OBJECT_DEFS.extend(make_guard(166, "ss", 138, "medium"))
+_OBJECT_DEFS.extend(make_guard(198, "ss", 138, "hard"))
+
+_OBJECT_DEFS.extend(make_guard(130, "ss patroling", 146, "easy"))
+_OBJECT_DEFS.extend(make_guard(166, "ss patroling", 146, "medium"))
+_OBJECT_DEFS.extend(make_guard(202, "ss patroling", 146, "hard"))
+
+_OBJECT_DEFS.extend(make_guard(130, "dog", 99, "easy"))
+_OBJECT_DEFS.extend(make_guard(170, "dog", 99, "medium"))
+_OBJECT_DEFS.extend(make_guard(206, "dog", 99, "hard"))
+
+_OBJECT_DEFS.extend(make_guard(138, "dog patroling", 123, "easy"))
+_OBJECT_DEFS.extend(make_guard(174, "dog patroling", 123, "medium"))
+_OBJECT_DEFS.extend(make_guard(210, "dog patroling", 123, "hard"))
+
+_OBJECT_DEFS.extend(make_guard(216, "mutant", 187, "easy"))
+_OBJECT_DEFS.extend(make_guard(234, "mutant", 187, "medium"))
+_OBJECT_DEFS.extend(make_guard(252, "mutant", 187, "hard"))
+
+_OBJECT_DEFS.extend(make_guard(220, "mutant patroling", 195, "easy"))
+_OBJECT_DEFS.extend(make_guard(238, "mutant patroling", 195, "medium"))
+_OBJECT_DEFS.extend(make_guard(256, "mutant patroling", 195, "hard"))
 
 OBJECT_DEFS = {w.code: w for w in _OBJECT_DEFS}

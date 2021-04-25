@@ -38,9 +38,11 @@ class LevelEditor():
 
         self.object_grid = [[None for y in range(y) ] for x in range(x)]
         for coord, code in level_data['object_list']:
-            if code in range(23, 74+1):
+            if code in OBJECT_DEFS:
                 y, x = coord
                 self.update_object_grid(x, y, code)
+            else:
+                print(f"ignoring object {code} at {coord}")
 
         camera.orthographic = True
         camera.fov = 5
@@ -118,7 +120,7 @@ class LevelEditor():
 
 
 class Inventory(Entity):
-    def __init__(self, make_click, rows=2, cols=5, full_size=60, scrollable=True, **kwargs):
+    def __init__(self, make_click, rows=2, cols=5, full_size=120, scrollable=True, **kwargs):
         super().__init__(
             parent = camera.ui,
             model = Quad(radius=.015),
@@ -254,7 +256,7 @@ class Tile(Entity):
             setattr(self, key, value)
 
     def set_texture(self, wall_code):
-        txt = WALL_DEFS[wall_code].texture
+        txt = WALL_DEFS[wall_code].editor_texture
         self.wall_code = wall_code
         self.texture = txt
 
