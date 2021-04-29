@@ -4,7 +4,7 @@ import logging
 from ursina import Entity, scene, color, Grid, Plane, load_texture, curve, invoke, Mesh, load_model, Vec3, MeshCollider
 
 from wall_runner import LevelOptimiser
-from sprites import SolidSprite
+from sprites import SolidSprite, FacingSprite
 
 logger = logging.getLogger(__name__)
 
@@ -330,6 +330,10 @@ class LevelLoader():
                 txt = SolidSprite.texture_filename(code)
                 y, x = coord
                 self.sprites.append(SolidSprite(txt, position=(x+0.5,0,y+0.5)))
+                total_objects += 1
+            if code in range(108, 144):
+                y, x = coord
+                self.sprites.append(FacingSprite(position=(x+0.5,0,y+0.5)))
                 total_objects += 1
 
         print(f"make {total_objects} objects")
